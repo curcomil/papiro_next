@@ -1,5 +1,3 @@
-import { METHODS } from "http";
-
 export interface Carpeta {
   _id: string;
   nombre_expediente: string;
@@ -14,6 +12,7 @@ export interface Carpeta {
 }
 
 export interface Item {
+  carpeta_padre?: Carpeta | null;
   _id: string;
   numero_inventario: number;
   tipologia: string;

@@ -11,8 +11,9 @@ type FetchState = "loading" | "success" | "error";
 export default function Home_xmlibris() {
   const [isMobile, setIsMobile] = useState(false);
   const [carpetas, setCarpetas] = useState<Carpeta[]>([]);
-  const [carpeta_seleccionada, setCarpetaSeleccionada] =
-    useState<Carpeta | null>(null);
+  const [carpeta_seleccionada, setCarpetaSeleccionada] = useState<
+    Carpeta | null | undefined
+  >(null);
   const [items, setItems] = useState<Item[]>([]);
   const [item_seleccionado, setItemSeleccionado] = useState<Item | null>(null);
   const [fetchState, setFetchState] = useState<FetchState>("loading");
@@ -353,7 +354,10 @@ export default function Home_xmlibris() {
                     {itemsBusqueda.map((it) => (
                       <div
                         key={it._id}
-                        onClick={() => setItemBusquedaSeleccionado(it)}
+                        onClick={() => {
+                          setItemBusquedaSeleccionado(it);
+                          setCarpetaSeleccionada(it.carpeta_padre);
+                        }}
                         className={`cursor-pointer rounded-xl p-2 2xl:p-3 transition-all flex flex-col items-center text-center gap-1.5 border
                           ${
                             it._id === itemBusquedaSeleccionado?._id
@@ -366,7 +370,7 @@ export default function Home_xmlibris() {
                           <img
                             src={it.imagen_url}
                             alt={it.titulo}
-                            className="w-10 h-10 2xl:w-14 2xl:h-14 object-cover rounded-lg"
+                            className="w-30 h-30 2xl:w-14 2xl:h-14 object-cover rounded-lg"
                           />
                         ) : (
                           <div className="w-10 h-10 2xl:w-14 2xl:h-14 bg-[#f8ddae] rounded-lg flex items-center justify-center shrink-0">
@@ -450,7 +454,7 @@ export default function Home_xmlibris() {
                                 <span className="font-medium">
                                   Total items:
                                 </span>{" "}
-                                {carpeta_seleccionada.items.length}
+                                {carpeta_seleccionada.items?.length}
                               </p>
                             </div>
                           </div>
