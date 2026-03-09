@@ -4,36 +4,57 @@
 }
 
 @plugin "daisyui/theme" {
-  name: "light";
+  name: "xmlibris";
   default: true;
   prefersdark: false;
   color-scheme: "light";
-  --color-base-100: oklch(98% 0.001 106.423);
-  --color-base-200: oklch(97% 0.001 106.424);
-  --color-base-300: oklch(92% 0.003 48.717);
-  --color-base-content: oklch(21% 0.006 56.043);
-  --color-primary: #e6c385;
-  --color-primary-content: oklch(21% 0.006 56.043);
-  --color-secondary: oklch(85% 0.199 91.936);
-  --color-secondary-content: oklch(28% 0.066 53.813);
-  --color-accent: oklch(67% 0.182 276.935);
-  --color-accent-content: oklch(25% 0.09 281.288);
-  --color-neutral: oklch(37% 0.01 67.558);
-  --color-neutral-content: oklch(98% 0.001 106.423);
-  --color-info: oklch(68% 0.169 237.323);
-  --color-info-content: oklch(97% 0.013 236.62);
-  --color-success: oklch(72% 0.219 149.579);
-  --color-success-content: oklch(98% 0.018 155.826);
-  --color-warning: oklch(79% 0.184 86.047);
-  --color-warning-content: oklch(98% 0.026 102.212);
-  --color-error: oklch(64% 0.246 16.439);
-  --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.5rem;
+
+  /* ── Fondos ──────────────────────────────────────────────
+     base-100 → panel derecho (detalle)     #F5F4F0
+     base-200 → cards en ambos paneles      #FFFFFF
+     base-300 → bordes y separadores        #E2E8F0
+  ──────────────────────────────────────────────────────── */
+  --color-base-100: oklch(96.5% 0.005 85);
+  --color-base-200: oklch(100% 0 0);
+  --color-base-300: oklch(91% 0.012 250);
+  --color-base-content: oklch(18% 0.04 270); /* #1A1A2E texto principal */
+
+  /* ── Sidebar izquierdo ───────────────────────────────────
+     Usá `bg-neutral` en tu componente de sidebar
+  ──────────────────────────────────────────────────────── */
+  --color-neutral: oklch(22% 0.035 240); /* #1E2A3A fondo sidebar */
+  --color-neutral-content: oklch(96.5% 0.005 85); /* texto sobre sidebar */
+
+  /* ── Acción principal / Hover ────────────────────────────
+     Botones, links activos, selección de carpeta
+  ──────────────────────────────────────────────────────── */
+  --color-primary: oklch(42% 0.09 330);
+  --color-primary-content: oklch(100% 0 0);
+
+  /* ── Secundario (metadata, conteos) ─────────────────────*/
+  --color-secondary: oklch(52% 0.008 258); /* #6B7280 texto apagado */
+  --color-secondary-content: oklch(100% 0 0);
+
+  --color-accent: oklch(32% 0.09 330);
+  --color-accent-content: oklch(100% 0 0);
+
+  /* ── Estados ─────────────────────────────────────────── */
+  --color-info: oklch(60% 0.126 221.723);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(62% 0.194 149.214);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(85% 0.199 91.936);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(70% 0.191 22.216);
+  --color-error-content: oklch(0% 0 0);
+
+  /* ── Forma (institucional = esquinas cuadradas) ──────── */
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 1;
+  --depth: 0;
   --noise: 0;
 }

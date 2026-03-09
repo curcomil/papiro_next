@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Gloock&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Gloock&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
 .login {
   font-family: "Gloock", serif;
@@ -8,8 +8,9 @@
 }
 
 .home {
-  font-family: "Chivo Mono", monospace;
+  font-family: "Open Sans", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 400;
+  font-weight: 300;
   font-style: normal;
+  font-variation-settings: "wdth" 100;
 }

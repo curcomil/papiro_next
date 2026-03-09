@@ -20,7 +20,6 @@ export default function Home_xmlibris() {
   const [itemsFetchState, setItemsFetchState] = useState<FetchState>("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [respuestaTypeItem, setRespuestaTypeItem] = useState<boolean>(false);
-  // Guardamos los items de búsqueda separados de los items de carpeta
   const [itemsBusqueda, setItemsBusqueda] = useState<Item[]>([]);
   const [itemBusquedaSeleccionado, setItemBusquedaSeleccionado] =
     useState<Item | null>(null);
@@ -49,11 +48,10 @@ export default function Home_xmlibris() {
 
   const [filter, setFilter] = useState(carpeta);
   const [query, setQuery] = useState<string>("");
-  const [queryActivo, setQueryActivo] = useState<string>(""); // ← guarda el query del último submit para el badge
+  const [queryActivo, setQueryActivo] = useState<string>("");
   const [filtroActivo, setFiltroActivo] = useState<string>("");
   const filterFormRef = useRef<HTMLFormElement>(null);
 
-  // Resetea el estado de búsqueda y vuelve al modo normal
   const resetBusqueda = () => {
     setRespuestaTypeItem(false);
     setItemsBusqueda([]);
@@ -73,7 +71,6 @@ export default function Home_xmlibris() {
       : filtroActivo;
 
     const payload = { type: filter.nombre, query, filtro: filtro_final };
-    console.log(payload);
     setQueryActivo(query);
     setFetchState("loading");
 
@@ -147,7 +144,8 @@ export default function Home_xmlibris() {
     if (state === "loading") {
       return (
         <div className={`flex items-center justify-center ${minHeight} w-full`}>
-          <span className="loading loading-ring loading-md text-[#4E4942]" />
+          {/* loading-spinner usa el color primary del tema activo */}
+          <span className="loading loading-ring loading-md text-primary" />
         </div>
       );
     }
@@ -156,13 +154,13 @@ export default function Home_xmlibris() {
         <div
           className={`flex flex-col items-center justify-center gap-2 ${minHeight}`}
         >
-          <p className="text-red-500 font-semibold text-xs">
+          <p className="text-error font-semibold text-xs">
             Error al cargar datos
           </p>
-          {error && <p className="text-xs text-gray-500">{error}</p>}
+          {error && <p className="text-xs text-base-content/50">{error}</p>}
           <button
             onClick={() => window.location.reload()}
-            className="bg-yellow-50 hover:bg-yellow-100 font-bold py-1 px-3 rounded-lg shadow text-xs transition"
+            className="btn btn-xs btn-soft btn-warning"
           >
             Reintentar
           </button>
@@ -173,7 +171,7 @@ export default function Home_xmlibris() {
   };
 
   return (
-    <div className="home h-screen overflow-hidden bg-[#F9E6C5] text-[#4E4942]">
+    <div className="home h-screen overflow-hidden bg-base-100 text-base-content">
       {isMobile ? (
         <div className="flex items-center justify-center h-full px-6">
           <p className="text-center text-base font-semibold">
@@ -183,16 +181,13 @@ export default function Home_xmlibris() {
       ) : (
         <div className="grid grid-cols-2 h-full">
           {/* ══ Panel izquierdo ══ */}
-          <div className="flex flex-col h-full p-3 2xl:p-5 overflow-hidden border-r border-[#e8d5b0]">
+          <div className="flex flex-col h-full p-3 2xl:p-5 overflow-hidden border-r border-base-300 bg-base-100">
             {/* Header */}
             <div className="flex-none flex justify-between items-center mb-2 2xl:mb-4">
               <h1 className="font-bold text-lg 2xl:text-2xl">
                 {respuestaTypeItem ? "Resultados" : "Carpetas"}
               </h1>
-              <button
-                type="button"
-                className="text-xs 2xl:text-sm hover:cursor-pointer"
-              >
+              <button type="button" className="btn btn-xs btn-ghost">
                 Cerrar sesión
               </button>
             </div>
@@ -206,19 +201,20 @@ export default function Home_xmlibris() {
                   handleSearch();
                 }}
               >
+                {/* input es un componente DaisyUI; input-sm para el tamaño */}
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={`Buscar ${filter.nombre}...`}
-                  className="w-full rounded-lg px-2.5 py-1.5 text-xs 2xl:text-sm bg-yellow-50 shadow focus:outline-none focus:ring-2 focus:ring-[#F9E6C5] transition"
+                  className="input input-sm w-full"
                 />
                 <button type="submit" className="hidden" />
               </form>
               <label className="flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <input
                   type="checkbox"
-                  className="toggle toggle-xs 2xl:toggle-sm"
+                  className="toggle toggle-xs 2xl:toggle-sm toggle-primary"
                   onChange={(e) => {
                     const nuevoFiltro = e.target.checked ? item : carpeta;
                     setFilter(nuevoFiltro);
@@ -234,7 +230,7 @@ export default function Home_xmlibris() {
 
             {/* Filtros */}
             <div className="flex-none mb-2">
-              <p className="text-xs font-semibold text-[#4E4942]/50 uppercase tracking-wider mb-1">
+              <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-1">
                 Filtrar por
               </p>
               <form
@@ -250,7 +246,7 @@ export default function Home_xmlibris() {
                     : "Título"}
                 </div>
                 <input
-                  className="btn btn-xs btn-square"
+                  className="btn btn-xs btn-square btn-ghost"
                   type="reset"
                   value="×"
                   title="Limpiar filtro"
@@ -274,7 +270,8 @@ export default function Home_xmlibris() {
             {respuestaTypeItem && (
               <div className="flex-none flex items-center justify-between mb-2 px-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 bg-[#e8c97a]/40 text-[#4E4942] text-xs font-medium px-2 py-0.5 rounded-full">
+                  {/* badge es un componente DaisyUI */}
+                  <span className="badge badge-soft badge-warning gap-1 text-xs">
                     <svg
                       className="w-3 h-3"
                       fill="none"
@@ -295,7 +292,7 @@ export default function Home_xmlibris() {
                 </div>
                 <button
                   onClick={resetBusqueda}
-                  className="text-xs text-[#4E4942]/60 hover:text-[#4E4942] flex items-center gap-1 transition"
+                  className="btn btn-xs btn-ghost gap-1"
                 >
                   <svg
                     className="w-3 h-3"
@@ -325,11 +322,11 @@ export default function Home_xmlibris() {
                       <div
                         key={c._id}
                         onClick={() => setCarpetaSeleccionada(c)}
-                        className={`cursor-pointer rounded-xl p-2 2xl:p-3 transition-all flex flex-col items-center text-center gap-1 border
+                        className={`cursor-pointer rounded p-2 2xl:p-3 transition-all flex flex-col items-center text-center gap-1 border
                           ${
                             c._id === carpeta_seleccionada?._id
-                              ? "bg-[#f8ddae] border-[#e8c97a] shadow-md"
-                              : "bg-yellow-50 border-transparent shadow-sm hover:shadow-md hover:border-[#e8c97a]"
+                              ? "bg-primary text-primary-content border-primary shadow"
+                              : "bg-base-200 border-transparent shadow-sm hover:shadow-md hover:border-primary"
                           }`}
                       >
                         <img
@@ -340,7 +337,7 @@ export default function Home_xmlibris() {
                         <p className="font-semibold text-xs leading-tight line-clamp-2">
                           {c.nombre_expediente}
                         </p>
-                        <p className="text-xs text-[#4E4942]/50">
+                        <p className="text-xs text-secundary-content/50">
                           {c.items.length} items
                         </p>
                       </div>
@@ -358,14 +355,13 @@ export default function Home_xmlibris() {
                           setItemBusquedaSeleccionado(it);
                           setCarpetaSeleccionada(it.carpeta_padre);
                         }}
-                        className={`cursor-pointer rounded-xl p-2 2xl:p-3 transition-all flex flex-col items-center text-center gap-1.5 border
+                        className={`cursor-pointer rounded p-2 2xl:p-3 transition-all flex flex-col items-center text-center gap-1.5 border
                           ${
                             it._id === itemBusquedaSeleccionado?._id
-                              ? "bg-[#f8ddae] border-[#e8c97a] shadow-md"
-                              : "bg-yellow-50 border-transparent shadow-sm hover:shadow-md hover:border-[#e8c97a]"
+                              ? "bg-base-300 border-primary shadow-md"
+                              : "bg-base-200 border-transparent shadow-sm hover:shadow-md hover:border-primary"
                           }`}
                       >
-                        {/* Imagen del item o placeholder */}
                         {it.imagen_url ? (
                           <img
                             src={it.imagen_url}
@@ -373,9 +369,9 @@ export default function Home_xmlibris() {
                             className="w-30 h-30 2xl:w-40 2xl:h-40 object-cover rounded-lg"
                           />
                         ) : (
-                          <div className="w-10 h-10 2xl:w-14 2xl:h-14 bg-[#f8ddae] rounded-lg flex items-center justify-center shrink-0">
+                          <div className="w-10 h-10 2xl:w-14 2xl:h-14 bg-base-300 rounded-lg flex items-center justify-center shrink-0">
                             <svg
-                              className="w-5 h-5 text-[#4E4942]/30"
+                              className="w-5 h-5 text-base-content/30"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -393,7 +389,7 @@ export default function Home_xmlibris() {
                           {it.titulo || "Sin título"}
                         </p>
                         {it.numero_inventario > 0 && (
-                          <p className="text-xs text-[#4E4942]/50">
+                          <p className="text-xs text-base-content/50">
                             Inv. {it.numero_inventario}
                           </p>
                         )}
@@ -406,8 +402,7 @@ export default function Home_xmlibris() {
           </div>
 
           {/* ══ Panel derecho ══ */}
-          <div className="bg-[#f8ddae] h-full p-3 2xl:p-5 flex flex-col overflow-hidden">
-            {/* ── Modo normal: sección 1 (30%) + sección 2 (70%) fijas, separador, sección 3 flex ── */}
+          <div className="bg-base-200 h-full p-3 2xl:p-5 flex flex-col overflow-hidden">
             {!respuestaTypeItem ? (
               <>
                 {/* Sección 1 — Detalle carpeta */}
@@ -430,27 +425,27 @@ export default function Home_xmlibris() {
                               {carpeta_seleccionada.nombre_expediente}
                             </h2>
                             <div className="mt-1 space-y-0.5">
-                              <p className="text-xs 2xl:text-base truncate">
+                              <p className="text-xs 2xl:text-sm truncate">
                                 <span className="font-medium">Ubicación:</span>{" "}
                                 {carpeta_seleccionada.ubicacion_fisica}
                               </p>
-                              <p className="text-xs 2xl:text-base">
+                              <p className="text-xs 2xl:text-sm">
                                 <span className="font-medium">Referencia:</span>{" "}
                                 {carpeta_seleccionada.referencia_control ||
                                   "N/A"}
                               </p>
-                              <p className="text-xs 2xl:text-base">
+                              <p className="text-xs 2xl:text-sm">
                                 <span className="font-medium">Notas:</span>{" "}
                                 {carpeta_seleccionada.notas || "N/A"}
                               </p>
-                              <p className="text-xs 2xl:text-base">
+                              <p className="text-xs 2xl:text-sm">
                                 <span className="font-medium">
                                   Palabras clave:
                                 </span>{" "}
                                 {carpeta_seleccionada.keywords?.join(", ") ||
                                   "N/A"}
                               </p>
-                              <p className="text-xs 2xl:text-base">
+                              <p className="text-xs 2xl:text-sm">
                                 <span className="font-medium">
                                   Total items:
                                 </span>{" "}
@@ -465,7 +460,7 @@ export default function Home_xmlibris() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                <button className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition 2xl:text-base">
+                                <button className="btn btn-primary btn-xs btn-soft 2xl:btn-sm">
                                   Ver en Catarina ↗
                                 </button>
                               </Link>
@@ -474,7 +469,7 @@ export default function Home_xmlibris() {
                               onClick={() =>
                                 modalCarpetaRef.current?.showModal()
                               }
-                              className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition 2xl:text-base"
+                              className="btn btn-primary btn-xs btn-soft 2xl:btn-sm"
                             >
                               Editar carpeta
                             </button>
@@ -500,14 +495,15 @@ export default function Home_xmlibris() {
                   )}
                 </LoadingZone>
 
-                <div className="flex-none h-px bg-yellow-50 my-2 2xl:my-3" />
+                {/* divider es un componente DaisyUI; reemplaza h-px bg-... */}
+                <div className="divider my-1 2xl:my-2" />
 
                 {/* Sección 2 — Items de carpeta */}
                 <div className="flex-none flex items-center mb-1.5">
                   <h3 className="font-semibold text-xs 2xl:text-base">
                     Items
                     {itemsFetchState === "success" && (
-                      <span className="ml-2 font-normal text-[#4E4942]/50">
+                      <span className="ml-2 font-normal text-base-content/50">
                         {items.length} encontrados
                       </span>
                     )}
@@ -518,7 +514,7 @@ export default function Home_xmlibris() {
                   <LoadingZone state={itemsFetchState} minHeight="h-full">
                     {items.length === 0 ? (
                       <div className="flex items-center justify-center h-full">
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-base-content/40">
                           Esta carpeta no tiene items
                         </p>
                       </div>
@@ -531,17 +527,17 @@ export default function Home_xmlibris() {
                             className={`cursor-pointer rounded-lg p-2 transition-all border
                               ${
                                 it._id === item_seleccionado?._id
-                                  ? "bg-[#F9E6C5] border-[#e8c97a] shadow"
-                                  : "bg-yellow-50 border-transparent shadow-sm hover:shadow hover:border-[#e8c97a]"
+                                  ? "bg-primary text-primary-content border-primary shadow"
+                                  : "bg-base-100 border-transparent shadow-sm hover:shadow hover:border-primary"
                               }`}
                           >
                             <p className="text-xs font-bold truncate">
                               {it.titulo || "Sin título"}
                             </p>
-                            <p className="text-xs text-gray-500 truncate mt-0.5">
+                            <p className="text-xs text-secundary-content/50 truncate mt-0.5">
                               {it.tipologia || "—"}
                             </p>
-                            <p className="text-xs text-gray-400 truncate">
+                            <p className="text-xs text-secundary-content/40 truncate">
                               {it.autor || "—"}
                             </p>
                           </div>
@@ -551,13 +547,13 @@ export default function Home_xmlibris() {
                   </LoadingZone>
                 </div>
 
-                <div className="flex-none h-px bg-yellow-50 my-2 2xl:my-3" />
+                <div className="divider my-1 2xl:my-2" />
 
                 {/* Sección 3 — Detalle item */}
                 <div className="flex-1 min-h-0 overflow-y-auto">
                   {!item_seleccionado ? (
                     <div className="flex items-center justify-center h-full">
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-base-content/40">
                         Selecciona un item para ver sus detalles
                       </p>
                     </div>
@@ -571,14 +567,14 @@ export default function Home_xmlibris() {
                             className="w-20 h-20 2xl:w-32 2xl:h-32 object-cover rounded-lg shadow"
                           />
                         ) : (
-                          <div className="w-20 h-20 2xl:w-32 2xl:h-32 bg-yellow-50 rounded-lg shadow flex items-center justify-center">
-                            <p className="text-xs text-gray-400 text-center">
+                          <div className="w-20 h-20 2xl:w-32 2xl:h-32 bg-base-100 rounded-lg shadow flex items-center justify-center">
+                            <p className="text-xs text-base-content/40 text-center">
                               Sin imagen
                             </p>
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-col gap-0.5 flex-1 text-xs">
+                      <div className="flex flex-col gap-0.5 flex-1 text-xs 2xl:text-sm">
                         <h3 className="font-bold text-sm 2xl:text-base leading-tight mb-1">
                           {item_seleccionado.titulo || "Sin título"}
                         </h3>
@@ -616,14 +612,15 @@ export default function Home_xmlibris() {
                               href={item_seleccionado.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="self-start bg-yellow-50 hover:bg-yellow-100 font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition"
                             >
-                              Ver en Catarina ↗
+                              <button className="btn btn-xs btn-soft btn-primary 2xl:btn-sm">
+                                Ver en Catarina ↗
+                              </button>
                             </Link>
                           )}
                           <button
                             onClick={() => modalItemRef.current?.showModal()}
-                            className="self-start bg-yellow-50 hover:bg-yellow-100 font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition"
+                            className="btn btn-xs btn-soft btn-primary 2xl:btn-sm"
                           >
                             Editar
                           </button>
@@ -651,7 +648,6 @@ export default function Home_xmlibris() {
                 )}
               </>
             ) : (
-              /* ── Modo búsqueda de items: sección 1 (30%) + sección 2 (70%) ── */
               <>
                 {/* Sección 1 — Carpeta padre (30%) */}
                 <div className="h-[30%] flex flex-col overflow-hidden">
@@ -669,8 +665,8 @@ export default function Home_xmlibris() {
                         />
                         <div className="flex flex-col flex-1 min-w-0 justify-between overflow-hidden">
                           <div>
-                            {/* Pill indicando que es contexto de la búsqueda */}
-                            <span className="inline-block text-xs bg-[#e8c97a]/40 px-2 py-0.5 rounded-full mb-1">
+                            {/* badge reemplaza el span personalizado */}
+                            <span className="badge badge-soft badge-warning badge-xs mb-1">
                               Carpeta padre
                             </span>
                             <h2 className="font-bold text-sm 2xl:text-base leading-tight truncate">
@@ -696,7 +692,7 @@ export default function Home_xmlibris() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                <button className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition">
+                                <button className="btn btn-xs btn-soft">
                                   Ver en Catarina ↗
                                 </button>
                               </Link>
@@ -705,7 +701,7 @@ export default function Home_xmlibris() {
                               onClick={() =>
                                 modalCarpetaRef.current?.showModal()
                               }
-                              className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition"
+                              className="btn btn-xs btn-soft"
                             >
                               Ver carpeta completa
                             </button>
@@ -716,13 +712,13 @@ export default function Home_xmlibris() {
                   </LoadingZone>
                 </div>
 
-                <div className="flex-none h-px bg-yellow-50 my-2 2xl:my-3" />
+                <div className="divider my-1 2xl:my-2" />
 
                 {/* Sección 2 — Detalle del item seleccionado (70%) */}
                 <div className="h-[70%] flex flex-col overflow-hidden">
                   {!itemBusquedaSeleccionado ? (
                     <div className="flex items-center justify-center h-full">
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-base-content/40">
                         Selecciona un item para ver sus detalles
                       </p>
                     </div>
@@ -737,9 +733,9 @@ export default function Home_xmlibris() {
                               className="w-24 h-24 2xl:w-32 2xl:h-32 object-cover rounded-lg shadow"
                             />
                           ) : (
-                            <div className="w-24 h-24 2xl:w-32 2xl:h-32 bg-yellow-50 rounded-lg shadow flex items-center justify-center">
+                            <div className="w-24 h-24 2xl:w-32 2xl:h-32 bg-base-100 rounded-lg shadow flex items-center justify-center">
                               <svg
-                                className="w-8 h-8 text-[#4E4942]/20"
+                                className="w-8 h-8 text-base-content/20"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -798,14 +794,15 @@ export default function Home_xmlibris() {
                                 href={itemBusquedaSeleccionado.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="self-start bg-yellow-50 hover:bg-yellow-100 font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition"
                               >
-                                Ver en Catarina ↗
+                                <button className="btn btn-xs btn-soft">
+                                  Ver en Catarina ↗
+                                </button>
                               </Link>
                             )}
                             <button
                               onClick={() => modalItemRef.current?.showModal()}
-                              className="self-start bg-yellow-50 hover:bg-yellow-100 font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition"
+                              className="btn btn-xs btn-soft"
                             >
                               Editar
                             </button>
