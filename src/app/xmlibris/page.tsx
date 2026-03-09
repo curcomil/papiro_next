@@ -370,7 +370,7 @@ export default function Home_xmlibris() {
                           <img
                             src={it.imagen_url}
                             alt={it.titulo}
-                            className="w-30 h-30 2xl:w-14 2xl:h-14 object-cover rounded-lg"
+                            className="w-30 h-30 2xl:w-40 2xl:h-40 object-cover rounded-lg"
                           />
                         ) : (
                           <div className="w-10 h-10 2xl:w-14 2xl:h-14 bg-[#f8ddae] rounded-lg flex items-center justify-center shrink-0">
@@ -430,27 +430,27 @@ export default function Home_xmlibris() {
                               {carpeta_seleccionada.nombre_expediente}
                             </h2>
                             <div className="mt-1 space-y-0.5">
-                              <p className="text-xs truncate">
+                              <p className="text-xs 2xl:text-base truncate">
                                 <span className="font-medium">Ubicación:</span>{" "}
                                 {carpeta_seleccionada.ubicacion_fisica}
                               </p>
-                              <p className="text-xs">
+                              <p className="text-xs 2xl:text-base">
                                 <span className="font-medium">Referencia:</span>{" "}
                                 {carpeta_seleccionada.referencia_control ||
                                   "N/A"}
                               </p>
-                              <p className="text-xs">
+                              <p className="text-xs 2xl:text-base">
                                 <span className="font-medium">Notas:</span>{" "}
                                 {carpeta_seleccionada.notas || "N/A"}
                               </p>
-                              <p className="text-xs">
+                              <p className="text-xs 2xl:text-base">
                                 <span className="font-medium">
                                   Palabras clave:
                                 </span>{" "}
                                 {carpeta_seleccionada.keywords?.join(", ") ||
                                   "N/A"}
                               </p>
-                              <p className="text-xs">
+                              <p className="text-xs 2xl:text-base">
                                 <span className="font-medium">
                                   Total items:
                                 </span>{" "}
@@ -465,7 +465,7 @@ export default function Home_xmlibris() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                <button className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition">
+                                <button className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition 2xl:text-base">
                                   Ver en Catarina ↗
                                 </button>
                               </Link>
@@ -474,7 +474,7 @@ export default function Home_xmlibris() {
                               onClick={() =>
                                 modalCarpetaRef.current?.showModal()
                               }
-                              className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition"
+                              className="bg-yellow-50 hover:bg-yellow-100 text-[#4E4942] font-semibold py-1 px-2.5 rounded-lg shadow-sm text-xs transition 2xl:text-base"
                             >
                               Editar carpeta
                             </button>
@@ -504,7 +504,7 @@ export default function Home_xmlibris() {
 
                 {/* Sección 2 — Items de carpeta */}
                 <div className="flex-none flex items-center mb-1.5">
-                  <h3 className="font-semibold text-xs 2xl:text-sm">
+                  <h3 className="font-semibold text-xs 2xl:text-base">
                     Items
                     {itemsFetchState === "success" && (
                       <span className="ml-2 font-normal text-[#4E4942]/50">
@@ -514,7 +514,7 @@ export default function Home_xmlibris() {
                   </h3>
                 </div>
 
-                <div className="flex-none h-44 2xl:h-48 overflow-y-auto pr-1">
+                <div className="flex-none h-44 2xl:h-64 overflow-y-auto pr-1">
                   <LoadingZone state={itemsFetchState} minHeight="h-full">
                     {items.length === 0 ? (
                       <div className="flex items-center justify-center h-full">
