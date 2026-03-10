@@ -101,7 +101,7 @@ export class AmcService {
     return response.json();
   }
 
-  async findbyfilter(data: Partial<Item>): Promise<any> {
+  async findbyfilter(data: any): Promise<any> {
     const response = await fetch(
       `${this.baseUrl}/api/xmlibris/amc/findbyfilter`,
       {

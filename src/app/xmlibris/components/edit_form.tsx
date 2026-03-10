@@ -35,11 +35,13 @@ const Field = ({
   name,
   defaultValue,
   type = "text",
+  styles,
 }: {
   label: string;
   name: string;
   defaultValue?: string;
   type?: string;
+  styles?: string;
 }) => (
   <div className="flex flex-col gap-1">
     <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -49,7 +51,7 @@ const Field = ({
       name={name}
       type={type}
       defaultValue={defaultValue ?? ""}
-      className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"
+      className={`input input-primary ${styles && styles}`}
     />
   </div>
 );
@@ -71,7 +73,7 @@ const TextAreaField = ({
       name={name}
       defaultValue={defaultValue ?? ""}
       rows={3}
-      className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"
+      className="textarea textarea-primary w-full"
     />
   </div>
 );
@@ -175,17 +177,16 @@ export const EditForm = ({
           label="Palabras clave (separadas por coma)"
           name="keywords"
           defaultValue={keywordsToString(carpeta.keywords)}
+          styles="w-full"
         />
+
         <TextAreaField
           label="Notas"
           name="notas"
           defaultValue={carpeta.notas}
         />
 
-        <button
-          type="submit"
-          className="mt-2 w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition"
-        >
+        <button type="submit" className="mt-2 w-full btn btn-primary">
           Guardar cambios
         </button>
       </form>
@@ -239,6 +240,7 @@ export const EditForm = ({
           label="Palabras clave (separadas por coma)"
           name="keywords"
           defaultValue={keywordsToString(item.keywords)}
+          styles="w-full"
         />
         <TextAreaField
           label="Descripción"
@@ -247,10 +249,7 @@ export const EditForm = ({
         />
         <TextAreaField label="Notas" name="notas" defaultValue={item.notas} />
 
-        <button
-          type="submit"
-          className="mt-2 w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition"
-        >
+        <button type="submit" className="mt-2 w-full btn btn-primary">
           Guardar cambios
         </button>
       </form>
