@@ -1,4 +1,3 @@
-// services/users.ts — "use server"
 "use server";
 
 import { cookies } from "next/headers";
@@ -56,5 +55,80 @@ export async function updateUser(
     return { success: true, message: res.message };
   } catch {
     return { success: false, message: "No se pudo conectar con el servidor" };
+  }
+}
+
+export async function createUser(
+  data: Pick<User, "name" | "email" | "role" | "assignedCollections">,
+): Promise<UpdateUserResponse> {
+  try {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/api/users/create`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const res = await response.json().catch(() => null);
+    if (!response.ok)
+      return {
+        success: false,
+        message: res?.message ?? "Error al crear usuario",
+      };
+    return { success: true, message: res.message };
+  } catch {
+    return { success: false, message: "No se pudo conectar con el servidor" };
+  }
+}
+
+export async function deleteUser(user_id: string): Promise<any> {
+  try {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/api/users/${user_id}`, {
+      method: "Delete",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const res = await response.json().catch(() => null);
+    if (!response.ok)
+      return { success: false, message: res?.message ?? "Error al eliminar" };
+    return { success: true, message: res.message };
+  } catch {
+    return {
+      success: false,
+      message: "No se pudo conectar con el servidor",
+    };
+  }
+}
+
+export async function reset_credentials(user_id: string): Promise<any> {
+  try {
+    const token = await getToken();
+    const response = await fetch(
+      `${API_URL}/api/users/reset_credentials/${user_id}`,
+      {
+        method: "Delete",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const res = await response.json().catch(() => null);
+    if (!response.ok)
+      return {
+        success: false,
+        message: res?.message ?? "Error al eliminar credenciales",
+      };
+    return { success: true, message: res.message };
+  } catch {
+    return {
+      success: false,
+      message: "No se pudo conectar con el servidor",
+    };
   }
 }

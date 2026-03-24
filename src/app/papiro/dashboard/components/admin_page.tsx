@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import UsersTable from "./users";
+import { useState, useEffect } from "react";
+import UsersTable from "./users_dashboard";
 import type { User } from "../../services/users.types";
 import type { FetchMap } from "../page";
+import { ThemeToggle } from "../../components/ThemeToggle";
+import Colecciones_dashboard from "./colecciones_dashboard";
 
 interface CurrentUser {
   username: string;
@@ -13,6 +15,22 @@ interface CurrentUser {
 
 // ── Iconos ─────────────────────────────────────────────
 const Icons = {
+  general: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M3.75 3.75h6.75v6.75H3.75V3.75zm9.75 0h6.75v4.5h-6.75v-4.5zM3.75 13.5h4.5v6.75h-4.5V13.5zm6.75 3h9.75v3.75H10.5V16.5z"
+      />
+    </svg>
+  ),
   users: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -182,47 +200,12 @@ function StatCard({
   );
 }
 
-// ── Datos mock ─────────────────────────────────────────
-const roleBadge: Record<string, string> = {
-  admin: "badge-neutral",
-  digitizer: "badge-info",
-  coordinator: "badge-warning",
-  chief: "badge-success",
-};
-
+// ── Constantes ─────────────────────────────────────────
 const roleLabel: Record<string, string> = {
-  admin: "Admin",
   digitizer: "Digitalizador",
   coordinator: "Coordinadora",
   chief: "Jefatura",
 };
-
-const mockUsers = [
-  {
-    username: "sadiel",
-    name: "Sadiel Salgado García",
-    role: "admin",
-    collections: ["AMC", "BF"],
-  },
-  {
-    username: "curcomil",
-    name: "Curcomil Pérez",
-    role: "digitizer",
-    collections: ["AMC"],
-  },
-  {
-    username: "marina",
-    name: "Marina Velázquez",
-    role: "coordinator",
-    collections: ["AMC", "BF"],
-  },
-  {
-    username: "jefatura",
-    name: "Dirección General",
-    role: "chief",
-    collections: [],
-  },
-];
 
 const mockActivity = [
   {
@@ -256,12 +239,17 @@ const mockActivity = [
 ];
 
 const navItems = [
-  { id: "overview", label: "General", icon: Icons.collection },
+  { id: "overview", label: "General", icon: Icons.general },
   { id: "users", label: "Usuarios", icon: Icons.users },
+  { id: "colecciones", label: "Colecciones", icon: Icons.collection },
   { id: "digitizer", label: "Digitalizador", icon: Icons.digitizer },
   { id: "coordinator", label: "Coordinadora", icon: Icons.coordinator },
   { id: "chief", label: "Jefatura", icon: Icons.chief },
 ];
+
+const VALID_SECTIONS = navItems.map((n) => n.id);
+const DEFAULT_SECTION = "overview";
+const SESSION_KEY = "papiro_dashboard_section";
 
 interface Props {
   current_user: CurrentUser;
@@ -271,15 +259,32 @@ interface Props {
 
 // ── Main ───────────────────────────────────────────────
 export default function AdminView({ current_user, fetchMap, users }: Props) {
-  const [activeNav, setActiveNav] = useState("overview");
+  // ── El servidor y el primer render del cliente siempre producen
+  //    el mismo valor → sin hydration mismatch jamás. ──────────────
+  const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
+
+  // ── Post-hydration: restaura la sección guardada en sessionStorage.
+  //    sessionStorage sobrevive a navegación interna (Link, back/forward)
+  //    pero se limpia al cerrar la pestaña, que es el comportamiento ideal. ──
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SESSION_KEY);
+    if (saved && VALID_SECTIONS.includes(saved)) {
+      setActiveNav(saved);
+    }
+  }, []);
+
+  const handleNav = (id: string) => {
+    setActiveNav(id);
+    sessionStorage.setItem(SESSION_KEY, id);
+  };
 
   return (
-    <div className="min-h-screen flex bg-base-100">
+    <div className="min-h-screen flex bg-base-200">
       {/* ── Sidebar ── */}
-      <aside className="w-56 shrink-0 flex flex-col bg-neutral text-neutral-content min-h-screen sticky top-0">
-        <div className="px-6 py-6 border-b border-neutral-content/10">
+      <aside className="w-56 shrink-0 flex flex-col bg-base-100 text-base-content min-h-screen sticky top-0">
+        <div className="px-6 py-6 border-b border-primary/50">
           <span className="login text-xl tracking-wide">Papiro</span>
-          <p className="home text-xs text-neutral-content/40 font-light mt-0.5">
+          <p className="home text-xs text-base-content/40 font-light mt-0.5">
             Panel de administración
           </p>
         </div>
@@ -288,14 +293,14 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveNav(item.id)}
+              onClick={() => handleNav(item.id)}
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-sm text-left transition-colors w-full
                 home text-sm font-light
                 ${
                   activeNav === item.id
-                    ? "bg-neutral-content/10 text-neutral-content"
-                    : "text-neutral-content/50 hover:text-neutral-content/80 hover:bg-neutral-content/5"
+                    ? "bg-primary text-primary-content"
+                    : "text-base-content/70 hover:text-base-content/80 hover:bg-primary/30"
                 }
               `}
             >
@@ -305,38 +310,41 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
           ))}
         </nav>
 
-        <div className="px-4 py-4 border-t border-neutral-content/10">
+        <div className="px-4 py-4 border-t border-primary/50">
           <div className="flex items-center gap-3 mb-3">
             <div className="size-8 rounded-sm bg-primary flex items-center justify-center text-primary-content login text-sm shrink-0">
               {current_user.name.charAt(0)}
             </div>
             <div className="min-w-0">
-              <p className="home text-xs font-normal text-neutral-content truncate">
+              <p className="home text-sm font-normal text-base-content truncate">
                 {current_user.name}
               </p>
-              <p className="home text-xs text-neutral-content/40 font-light">
+              <p className="home text-sm text-base-content/60 font-light">
                 @{current_user.username}
               </p>
             </div>
           </div>
-          <button className="flex items-center gap-2 text-neutral-content/40 hover:text-neutral-content/70 transition-colors home text-xs font-light">
-            {Icons.logout}
-            Cerrar sesión
-          </button>
+          <div className="flex justify-between items-center">
+            <button className="flex items-center gap-2 text-base-content/60 hover:text-base-content transition-colors home text-sm font-light">
+              {Icons.logout}
+              Cerrar sesión
+            </button>
+            <ThemeToggle />
+          </div>
         </div>
       </aside>
 
       {/* ── Contenido ── */}
       <main className="flex-1 overflow-y-auto">
-        {/* Header */}
-        <div className="px-10 pt-10 pb-6 border-b border-base-300">
+        <div className="px-10 pt-10 pb-6 border-b border-primary/50">
           <p className="home text-xs text-base-content/40 uppercase tracking-widest font-light mb-1">
             {navItems.find((n) => n.id === activeNav)?.label}
           </p>
           <h1 className="login text-3xl text-base-content">
             {activeNav === "overview" &&
-              `Bienvenidx, ${current_user.name.split(" ")[0]} ${current_user.name.split(" ")[1]} `}
+              `Bienvenidx, ${current_user.name.split(" ")[0]} ${current_user.name.split(" ")[1]}`}
             {activeNav === "users" && "Gestión de usuarios"}
+            {activeNav === "colecciones" && "Visualizador de colecciones"}
             {activeNav === "digitizer" && "Vista digitalizador"}
             {activeNav === "coordinator" && "Vista coordinadora"}
             {activeNav === "chief" && "Vista jefatura"}
@@ -344,7 +352,6 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
         </div>
 
         <div className="px-10 py-8">
-          {/* ── Overview ── */}
           {activeNav === "overview" && (
             <div className="flex flex-col gap-8">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -366,7 +373,6 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
                 />
                 <StatCard label="Pendientes" value={7} icon={Icons.clock} />
               </div>
-
               <div>
                 <h2 className="login text-lg text-base-content mb-4">
                   Actividad reciente
@@ -411,12 +417,11 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
             </div>
           )}
 
-          {/* ── Usuarios ── */}
           {activeNav === "users" && (
             <UsersTable users={users} FetchStatus={fetchMap.users} />
           )}
+          {activeNav === "colecciones" && <Colecciones_dashboard />}
 
-          {/* ── Placeholders otras vistas ── */}
           {["digitizer", "coordinator", "chief"].includes(activeNav) && (
             <div className="flex flex-col items-center justify-center py-24 gap-4 text-base-content/30">
               <div className="size-12 rounded-sm border-2 border-dashed border-base-300 flex items-center justify-center">

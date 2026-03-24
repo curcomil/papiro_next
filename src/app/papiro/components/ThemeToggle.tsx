@@ -1,7 +1,22 @@
-export function ThemeToggle({ onToggle }: { onToggle: () => void }) {
+import { useState, useEffect } from "react";
+
+export function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setDark(localStorage.getItem("theme") === "xmlibris-dark");
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    const theme = next ? "xmlibris-dark" : "xmlibris";
+    localStorage.setItem("theme", theme);
+    document.querySelector("[data-theme]")?.setAttribute("data-theme", theme);
+  };
   return (
     <label className="swap swap-rotate cursor-pointer">
-      <input type="checkbox" onChange={onToggle} />
+      <input type="checkbox" onChange={toggle} />
       {/* Sol */}
       <svg
         className="swap-on h-6 w-6 fill-current"

@@ -60,14 +60,6 @@ export default function Home_xmlibris() {
   const modalItemRef = useRef<any>(null);
   const filterFormRef = useRef<any>(null);
 
-  const toggleTheme = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    document
-      .querySelector("[data-theme]")
-      ?.setAttribute("data-theme", next ? "xmlibris-dark" : "xmlibris");
-  };
-
   const resetBusqueda = () => {
     setRespuestaTypeItem(false);
     setItemsBusqueda([]);
@@ -181,7 +173,7 @@ export default function Home_xmlibris() {
                 {respuestaTypeItem ? "Resultados" : "Carpetas"}
               </h1>
               <div className="flex items-center gap-2">
-                <ThemeToggle onToggle={toggleTheme} />
+                <ThemeToggle />
                 <button type="button" className="btn btn-xs btn-ghost">
                   Cerrar sesión
                 </button>
