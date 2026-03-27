@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import Admin_page from "./components/admin_page";
-import { getUsers } from "../services/users";
+import { getUsers, getcoordinators } from "../services/users";
 import { redirect } from "next/navigation";
+import { Digitizer_page } from "./components/digitizer_page";
 
 export interface FetchStatus {
   success: boolean;
@@ -47,7 +48,22 @@ export default async function Dashboard() {
       );
 
     case "digitizer":
-      return <div>Digitizer</div>;
+      const [coordinators] = await Promise.all([getcoordinators()]);
+
+      const fetchMap_digi: FetchMap = {
+        coordinators: {
+          success: coordinators.success,
+          message: coordinators.message,
+        },
+      };
+
+      return (
+        <Digitizer_page
+          current_user={user}
+          coordinators={coordinators.data}
+          fetchMap={fetchMap_digi}
+        />
+      );
 
     case "coordinator":
       return <div>Coordinator</div>;

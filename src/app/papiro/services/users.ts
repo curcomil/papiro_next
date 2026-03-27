@@ -1,7 +1,13 @@
 "use server";
 
 import { cookies } from "next/headers";
-import type { UsersResponse, UpdateUserResponse, User } from "./users.types";
+import type {
+  UsersResponse,
+  UpdateUserResponse,
+  User,
+  Coordinators,
+  CoordinatorsResponse,
+} from "./users.types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:5000";
 
@@ -129,6 +135,27 @@ export async function reset_credentials(user_id: string): Promise<any> {
     return {
       success: false,
       message: "No se pudo conectar con el servidor",
+    };
+  }
+}
+
+export async function getcoordinators(): Promise<CoordinatorsResponse> {
+  try {
+    const token = await getToken();
+    const response = await fetch(`${API_URL}/api/users/getcoordinators`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    const res = await response.json().catch(() => null);
+    if (!response.ok)
+      return { success: false, message: res?.message ?? "Error", data: [] };
+    return res as UsersResponse;
+  } catch {
+    return {
+      success: false,
+      message: "No se pudo conectar con el servidor",
+      data: [],
     };
   }
 }

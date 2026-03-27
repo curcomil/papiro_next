@@ -23,3 +23,16 @@ export interface UpdateUserResponse {
   success: boolean;
   message: string;
 }
+
+export interface Coordinators {
+  _id: string;
+  name: string;
+  email: string;
+  username: string;
+}
+
+export interface CoordinatorsResponse {
+  success: boolean;
+  message: string;
+  data: Coordinators[];
+}

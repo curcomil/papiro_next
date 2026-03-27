@@ -6,6 +6,8 @@ import type { User } from "../../services/users.types";
 import type { FetchMap } from "../page";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import Colecciones_dashboard from "./colecciones_dashboard";
+import { logout } from "../../services/auth";
+import { useRouter } from "next/navigation";
 
 interface CurrentUser {
   username: string;
@@ -259,13 +261,9 @@ interface Props {
 
 // ── Main ───────────────────────────────────────────────
 export default function AdminView({ current_user, fetchMap, users }: Props) {
-  // ── El servidor y el primer render del cliente siempre producen
-  //    el mismo valor → sin hydration mismatch jamás. ──────────────
   const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
+  const router = useRouter();
 
-  // ── Post-hydration: restaura la sección guardada en sessionStorage.
-  //    sessionStorage sobrevive a navegación interna (Link, back/forward)
-  //    pero se limpia al cerrar la pestaña, que es el comportamiento ideal. ──
   useEffect(() => {
     const saved = sessionStorage.getItem(SESSION_KEY);
     if (saved && VALID_SECTIONS.includes(saved)) {
@@ -276,6 +274,11 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
   const handleNav = (id: string) => {
     setActiveNav(id);
     sessionStorage.setItem(SESSION_KEY, id);
+  };
+
+  const handle_logout = async () => {
+    await logout();
+    router.refresh();
   };
 
   return (
@@ -325,7 +328,10 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <button className="flex items-center gap-2 text-base-content/60 hover:text-base-content transition-colors home text-sm font-light">
+            <button
+              onClick={() => handle_logout()}
+              className="flex items-center gap-2 text-base-content/60 hover:text-base-content transition-colors hover:cursor-pointer text-sm font-light"
+            >
               {Icons.logout}
               Cerrar sesión
             </button>

@@ -26,6 +26,7 @@ export const Create_user_form = ({ onClose }: Props) => {
     email: "",
     role: "digitizer" as UserRole,
     assignedCollections: [] as string[],
+    isActive: true as boolean,
   });
   const [isPending, setIsPending] = useState(false);
 
