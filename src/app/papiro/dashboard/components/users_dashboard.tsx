@@ -124,7 +124,12 @@ export default function UsersTable({ users, FetchStatus }: Props) {
                 <td className="text-base-content font-normal">{u.username}</td>
                 <td className="text-base-content/70">{u.name}</td>
                 <td>
-                  <span className="badge badge-md badge-soft badge-info">
+                  <span className={`badge badge-md badge-soft ${
+                    u.role === "admin" ? "badge-primary" :
+                    u.role === "chief" ? "badge-secondary" :
+                    u.role === "coordinator" ? "badge-warning" :
+                    "badge-info"
+                  }`}>
                     {roles_map(u.role)}
                   </span>
                 </td>
@@ -142,7 +147,7 @@ export default function UsersTable({ users, FetchStatus }: Props) {
                     Editar
                   </button>
                   <button
-                    className="btn btn-sm btn-error font-bold ml-3"
+                    className="btn btn-sm btn-soft btn-error font-light ml-3"
                     onClick={() => handle_delete(u._id)}
                   >
                     Eliminar

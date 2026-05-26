@@ -18,17 +18,17 @@ export function ItemRow({ item, seleccionado, onClick }: ItemRowProps) {
         }`}
     >
       <p className="text-xs font-bold truncate">
-        {item.titulo || "Sin título"}
+        {item.dc_metadata.titulo || "Sin título"}
       </p>
       <p
         className={`text-xs truncate mt-0.5 ${seleccionado ? "text-primary-content/50" : "text-base-content/50"}`}
       >
-        {item.tipologia || "—"}
+        {item.papiro_data.tipo_de_objeto || "—"}
       </p>
       <p
         className={`text-xs truncate mt-0.5 ${seleccionado ? "text-primary-content/50" : "text-base-content/50"}`}
       >
-        {item.autor || "—"}
+        {item.dc_metadata.autor || "—"}
       </p>
     </div>
   );

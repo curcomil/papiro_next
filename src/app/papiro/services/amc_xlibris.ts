@@ -1,36 +1,67 @@
+export type ItemStatus = "draft" | "pending_review" | "published" | "archived";
+
+export interface HistoryEntry {
+  name: string;
+  user: string;
+  date: string;
+  from: string;
+}
+
 export interface Carpeta {
   _id: string;
-  nombre_expediente: string;
-  nombre_expediente_normalizado: string;
+  type: "carpeta";
+  coleccion: string;
+  subcoleccion: string;
+  subcoleccion_normalizada: string;
   ubicacion_fisica: string;
   items: string[];
+  keywords: string[];
   notas: string;
   referencia_control: string;
   url: string;
-  type: string;
+  status: ItemStatus;
+  ultima_actualizacion: string | null;
+  published_at: string | null;
+  published_by: string | null;
+  history: HistoryEntry[];
+}
+
+export interface DcMetadata {
+  titulo: string;
+  autor: string;
+  descripcion: string;
+  tecnica: string;
+  medidas: string;
+  numero: string;
+}
+
+export interface PapiroData {
+  father_id: string;
+  tipo_de_objeto: string;
+  imagen: string;
+  imagen_url: string;
+  item_url: string;
   keywords: string[];
+  notas: string;
+  avaluo: string;
+  referencia_control: string;
 }
 
 export interface Item {
-  carpeta_padre?: Carpeta | null;
   _id: string;
-  numero_inventario: number;
-  tipologia: string;
-  titulo: string;
-  autor: string;
-  fecha: string;
-  dimensiones: string;
-  descripcion: string;
-  notas: string;
-  referencia_control: string;
-  url: string;
-  imagen_url: string;
-  type: string;
-  avaluo: string;
-  keywords: string[];
-  father_id: string;
+  internal_id: string;
+  type: "item";
   coleccion: string;
   subcoleccion: string;
+  status: ItemStatus;
+  ultima_actualizacion: string | null;
+  published_at: string | null;
+  published_by: string | null;
+  history: HistoryEntry[];
+  dc_metadata: DcMetadata;
+  papiro_data: PapiroData;
+  /** Solo presente en respuestas de findbyfilter */
+  carpeta_padre?: Carpeta | "Sin carpeta asignada" | null;
 }
 
 export class AmcService {
@@ -44,7 +75,8 @@ export class AmcService {
     const response = await fetch(`${this.baseUrl}/api/xmlibris/amc/carpetas`);
     if (!response.ok)
       throw new Error(`${response.status} ${response.statusText}`);
-    return response.json();
+    const res = await response.json();
+    return res.data;
   }
 
   async getItems(carpetaId: string): Promise<Item[]> {
@@ -53,7 +85,8 @@ export class AmcService {
     );
     if (!response.ok)
       throw new Error(`${response.status} ${response.statusText}`);
-    return response.json();
+    const res = await response.json();
+    return res.data;
   }
 
   async getCarpeta_by_id(carpetaId: string): Promise<Carpeta> {
@@ -62,13 +95,14 @@ export class AmcService {
     );
     if (!response.ok)
       throw new Error(`${response.status} ${response.statusText}`);
-    return response.json();
+    const res = await response.json();
+    return res.data;
   }
 
   async updateCarpeta(
     carpetaId: string,
     data: Partial<Carpeta>,
-  ): Promise<Carpeta> {
+  ): Promise<{ success: boolean; message: string; data: Carpeta }> {
     const response = await fetch(
       `${this.baseUrl}/api/xmlibris/amc/carpeta/${carpetaId}`,
       {
@@ -77,15 +111,12 @@ export class AmcService {
         body: JSON.stringify(data),
       },
     );
-
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(`${response.status} ${response.statusText}`);
-    }
-
     return response.json();
   }
 
-  async updateItem(itemId: string, data: Partial<Item>): Promise<Carpeta> {
+  async updateItem(itemId: string, data: Partial<Item>): Promise<{ success: boolean; message: string; data: Item }> {
     const response = await fetch(
       `${this.baseUrl}/api/xmlibris/amc/item/${itemId}`,
       {
@@ -94,14 +125,16 @@ export class AmcService {
         body: JSON.stringify(data),
       },
     );
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(`${response.status} ${response.statusText}`);
-    }
-
     return response.json();
   }
 
-  async findbyfilter(data: any): Promise<any> {
+  async findbyfilter(data: {
+    type: "carpeta" | "item";
+    filtro: string;
+    query: string;
+  }): Promise<{ success: boolean; data: Carpeta[] | Item[] }> {
     const response = await fetch(
       `${this.baseUrl}/api/xmlibris/amc/findbyfilter`,
       {

@@ -177,7 +177,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-sm border p-5 flex flex-col gap-3 ${accent ? "bg-primary text-primary-content border-primary" : "bg-base-200 border-base-300"}`}
+      className={`rounded-sm border p-5 flex flex-col gap-3 ${accent ? "bg-primary text-primary-content border-primary" : "bg-base-200 border-primary/20"}`}
     >
       <div className="flex items-center justify-between">
         <span
@@ -303,7 +303,7 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
                 ${
                   activeNav === item.id
                     ? "bg-primary text-primary-content"
-                    : "text-base-content/70 hover:text-base-content/80 hover:bg-primary/30"
+                    : "text-base-content/70 hover:text-base-content hover:bg-primary/10"
                 }
               `}
             >
@@ -390,7 +390,7 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
                       className="flex items-center justify-between px-4 py-3 bg-base-200 rounded-sm border border-base-300"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="size-7 rounded-sm bg-base-300 flex items-center justify-center login text-xs text-base-content/50 shrink-0">
+                        <div className="size-7 rounded-sm bg-primary/10 flex items-center justify-center login text-xs text-primary shrink-0">
                           {item.user.charAt(0).toUpperCase()}
                         </div>
                         <div>

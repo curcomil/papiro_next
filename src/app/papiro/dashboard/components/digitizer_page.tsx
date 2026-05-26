@@ -159,7 +159,7 @@ const navItems = [
 
 const VALID_SECTIONS = navItems.map((n) => n.id);
 const DEFAULT_SECTION = "overview";
-const SESSION_KEY = "papiro_dashboard_section";
+const SESSION_KEY = "papiro_digitizer_section";
 
 interface Props {
   current_user: CurrentUser;
@@ -198,7 +198,7 @@ export function Digitizer_page({
         <div className="px-6 py-6 border-b border-primary/50">
           <span className="login text-xl tracking-wide">Papiro</span>
           <p className="home text-xs text-base-content/40 font-light mt-0.5">
-            Panel de administración
+            Panel de digitalización
           </p>
         </div>
 
@@ -213,7 +213,7 @@ export function Digitizer_page({
                       ${
                         activeNav === item.id
                           ? "bg-primary text-primary-content"
-                          : "text-base-content/70 hover:text-base-content/80 hover:bg-primary/30"
+                          : "text-base-content/70 hover:text-base-content hover:bg-primary/10"
                       }
                     `}
             >
@@ -269,7 +269,7 @@ export function Digitizer_page({
 
         <div className="px-10 py-8">
           {activeNav === "overview" && (
-            <div className="flex flex-col items-center justify-center py-24 gap-4 text-base-content/30">
+            <div className="flex flex-col items-center justify-center py-24 gap-4 text-base-content/50">
               <p className="home text-sm font-light">
                 Este componente se construirá próximamente
               </p>

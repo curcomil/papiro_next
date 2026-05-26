@@ -96,10 +96,16 @@ export const EditForm = ({
       string
     >;
 
+    // keywords de carpeta (nivel raíz)
     if ("keywords" in datosActualizados) {
-      (datosActualizados as any).keywords = stringToKeywords(
+      (datosActualizados as Record<string, unknown>).keywords = stringToKeywords(
         datosActualizados.keywords,
       );
+    }
+    // keywords de item (nivel papiro_data)
+    if ("papiro_data.keywords" in datosActualizados) {
+      (datosActualizados as Record<string, unknown>)["papiro_data.keywords"] =
+        stringToKeywords(datosActualizados["papiro_data.keywords"]);
     }
 
     // Cerrar modal primero y esperar animación de DaisyUI antes de mostrar Swal
@@ -124,7 +130,7 @@ export const EditForm = ({
 
         request
           .then((res: any) => {
-            onUpdate(res.carpeta ?? res.item);
+            onUpdate(res.data);
             Swal.fire({
               title: "¡Actualizado!",
               text: res.message,
@@ -151,14 +157,14 @@ export const EditForm = ({
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-2">
         <div className="flex items-center gap-3 mb-2">
           <img className="w-12" src="/xmlibris/carpeta.png" alt="Carpeta" />
-          <h2 className="font-bold text-xl">{carpeta.nombre_expediente}</h2>
+          <h2 className="font-bold text-xl">{carpeta.subcoleccion}</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <Field
             label="Nombre"
-            name="nombre_expediente"
-            defaultValue={carpeta.nombre_expediente}
+            name="subcoleccion"
+            defaultValue={carpeta.subcoleccion}
           />
           <Field
             label="Ubicación física"
@@ -199,10 +205,10 @@ export const EditForm = ({
     return (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-2">
         <div className="flex items-center gap-3 mb-2">
-          {item.imagen_url ? (
+          {item.papiro_data.imagen_url ? (
             <img
-              src={item.imagen_url}
-              alt={item.titulo}
+              src={item.papiro_data.imagen_url}
+              alt={item.dc_metadata.titulo}
               className="w-12 h-12 object-cover rounded-lg shadow"
             />
           ) : (
@@ -210,44 +216,43 @@ export const EditForm = ({
               <span className="text-xs text-gray-400">Sin img</span>
             </div>
           )}
-          <h2 className="font-bold text-xl">{item.titulo || "Sin título"}</h2>
+          <h2 className="font-bold text-xl">{item.dc_metadata.titulo || "Sin título"}</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Título" name="titulo" defaultValue={item.titulo} />
-          <Field label="Autor" name="autor" defaultValue={item.autor} />
+          <Field label="Título" name="dc_metadata.titulo" defaultValue={item.dc_metadata.titulo} />
+          <Field label="Autor" name="dc_metadata.autor" defaultValue={item.dc_metadata.autor} />
           <Field
             label="Tipología"
-            name="tipologia"
-            defaultValue={item.tipologia}
+            name="papiro_data.tipo_de_objeto"
+            defaultValue={item.papiro_data.tipo_de_objeto}
           />
-          <Field label="Fecha" name="fecha" defaultValue={item.fecha} />
           <Field
             label="Dimensiones"
-            name="dimensiones"
-            defaultValue={item.dimensiones}
+            name="dc_metadata.medidas"
+            defaultValue={item.dc_metadata.medidas}
           />
-          <Field label="Avalúo" name="avaluo" defaultValue={item.avaluo} />
-          <Field label="URL" name="url" defaultValue={item.url} />
+          <Field label="Avalúo" name="papiro_data.avaluo" defaultValue={item.papiro_data.avaluo} />
+          <Field label="URL" name="papiro_data.item_url" defaultValue={item.papiro_data.item_url} />
           <Field
             label="URL imagen"
-            name="imagen_url"
-            defaultValue={item.imagen_url}
+            name="papiro_data.imagen_url"
+            defaultValue={item.papiro_data.imagen_url}
           />
         </div>
 
         <Field
           label="Palabras clave (separadas por coma)"
-          name="keywords"
-          defaultValue={keywordsToString(item.keywords)}
+          name="papiro_data.keywords"
+          defaultValue={keywordsToString(item.papiro_data.keywords)}
           styles="w-full"
         />
         <TextAreaField
           label="Descripción"
-          name="descripcion"
-          defaultValue={item.descripcion}
+          name="dc_metadata.descripcion"
+          defaultValue={item.dc_metadata.descripcion}
         />
-        <TextAreaField label="Notas" name="notas" defaultValue={item.notas} />
+        <TextAreaField label="Notas" name="papiro_data.notas" defaultValue={item.papiro_data.notas} />
 
         <button type="submit" className="mt-2 w-full btn btn-primary">
           Guardar cambios

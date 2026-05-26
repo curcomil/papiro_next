@@ -20,8 +20,8 @@ export function ItemDetail({ item, onEditar }: ItemDetailProps) {
           {" "}
           <div className="modal-box flex flex-col items-center gap-4">
             <img
-              src={item.imagen_url}
-              alt={item.titulo}
+              src={item.papiro_data.imagen_url}
+              alt={item.dc_metadata.titulo}
               className="max-w-full rounded-lg"
             />
             <div className="modal-action">
@@ -32,10 +32,10 @@ export function ItemDetail({ item, onEditar }: ItemDetailProps) {
           </div>
         </dialog>
 
-        {item.imagen_url ? (
+        {item.papiro_data.imagen_url ? (
           <img
-            src={item.imagen_url}
-            alt={item.titulo}
+            src={item.papiro_data.imagen_url}
+            alt={item.dc_metadata.titulo}
             className="w-20 h-20 2xl:w-32 2xl:h-32 object-cover rounded-lg shadow cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => modalImageRef.current?.showModal()}
           />
@@ -59,30 +59,29 @@ export function ItemDetail({ item, onEditar }: ItemDetailProps) {
       </div>
       <div className="flex flex-col gap-0.5 flex-1 text-xs 2xl:text-sm">
         <h3 className="font-bold text-sm 2xl:text-base leading-tight mb-1">
-          {item.titulo || "Sin título"}
+          {item.dc_metadata.titulo || "Sin título"}
         </h3>
         {[
-          { label: "Autor", value: item.autor },
-          { label: "Tipología", value: item.tipologia },
-          { label: "Fecha", value: item.fecha },
-          { label: "Dimensiones", value: item.dimensiones },
-          { label: "Descripción", value: item.descripcion },
-          { label: "Notas", value: item.notas },
-          { label: "Avalúo", value: item.avaluo },
+          { label: "Autor", value: item.dc_metadata.autor },
+          { label: "Tipología", value: item.papiro_data.tipo_de_objeto },
+          { label: "Dimensiones", value: item.dc_metadata.medidas },
+          { label: "Descripción", value: item.dc_metadata.descripcion },
+          { label: "Notas", value: item.papiro_data.notas },
+          { label: "Avalúo", value: item.papiro_data.avaluo },
         ].map(({ label, value }) => (
           <p key={label}>
             <span className="font-semibold">{label}:</span> {value || "N/A"}
           </p>
         ))}
-        {item.numero_inventario > 0 && (
+        {item.dc_metadata.numero && (
           <p>
             <span className="font-semibold">Inventario:</span>{" "}
-            {item.numero_inventario}
+            {item.dc_metadata.numero}
           </p>
         )}
         <div className="flex gap-2 mt-2">
-          {item.url && (
-            <Link href={item.url} target="_blank" rel="noopener noreferrer">
+          {item.papiro_data.item_url && (
+            <Link href={item.papiro_data.item_url} target="_blank" rel="noopener noreferrer">
               <button className="btn btn-xs btn-soft btn-primary 2xl:btn-sm">
                 Ver en Catarina ↗
               </button>

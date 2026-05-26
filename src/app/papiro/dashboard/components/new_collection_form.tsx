@@ -110,7 +110,7 @@ export default function New_collection_form({
             </legend>
             <input
               type="text"
-              className="input w-full home font-light text-sm border-neutral/50"
+              className="input input-primary w-full home font-light text-sm"
               placeholder="Ej. Archivo Miguel Covarrubias"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -138,7 +138,7 @@ export default function New_collection_form({
             </legend>
             <input
               type="text"
-              className="input w-full home font-light text-sm border-neutral/50"
+              className="input input-primary w-full home font-light text-sm"
               placeholder="Ej. amc"
               value={form.new_collection_name}
               onChange={(e) =>
@@ -164,8 +164,8 @@ export default function New_collection_form({
                     flex items-center gap-3 px-4 py-3 rounded-sm border cursor-pointer transition-colors
                     ${
                       active
-                        ? "border-primary bg-primary/5"
-                        : "border-neutral/50 hover:border-base-content/20"
+                        ? "border-primary bg-primary/10"
+                        : "border-base-300 hover:border-primary/50"
                     }
                   `}
                   >

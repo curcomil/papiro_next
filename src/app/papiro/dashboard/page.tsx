@@ -16,11 +16,6 @@ export interface FetchMap {
 export default async function Dashboard() {
   const cookieStore = await cookies();
   const userCookie = cookieStore.get("user");
-  const token = cookieStore.get("token")?.value;
-
-  if (!token) {
-    redirect("/papiro/login?error=unauthorized");
-  }
 
   const user = JSON.parse(userCookie?.value || "null");
 

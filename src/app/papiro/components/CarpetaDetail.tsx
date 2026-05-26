@@ -17,7 +17,7 @@ export function CarpetaDetail({ carpeta, onEditar }: CarpetaDetailProps) {
       <div className="flex flex-col flex-1 min-w-0 justify-between">
         <div>
           <h2 className="font-bold text-sm 2xl:text-xl leading-tight truncate">
-            {carpeta.nombre_expediente}
+            {carpeta.subcoleccion}
           </h2>
           <div className="mt-1 space-y-0.5">
             {[
