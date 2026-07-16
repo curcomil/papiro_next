@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import UsersTable from "./users_dashboard";
 import type { User } from "../../services/users.types";
 import type { FetchMap } from "../page";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import Colecciones_dashboard from "./colecciones_dashboard";
 import { logout } from "../../services/auth";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface CurrentUser {
@@ -249,9 +249,7 @@ const navItems = [
   { id: "chief", label: "Jefatura", icon: Icons.chief },
 ];
 
-const VALID_SECTIONS = navItems.map((n) => n.id);
 const DEFAULT_SECTION = "overview";
-const SESSION_KEY = "papiro_dashboard_section";
 
 interface Props {
   current_user: CurrentUser;
@@ -264,16 +262,27 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
   const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
   const router = useRouter();
 
+  // Restaurar sección desde la URL al montar
   useEffect(() => {
-    const saved = sessionStorage.getItem(SESSION_KEY);
-    if (saved && VALID_SECTIONS.includes(saved)) {
-      setActiveNav(saved);
-    }
+    const params = new URLSearchParams(window.location.search);
+    const s = params.get("s");
+    if (s && navItems.some((n) => n.id === s)) setActiveNav(s);
+  }, []);
+
+  // Sincronizar con los botones atrás/adelante del navegador
+  useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const s = params.get("s") ?? DEFAULT_SECTION;
+      setActiveNav(navItems.some((n) => n.id === s) ? s : DEFAULT_SECTION);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
   const handleNav = (id: string) => {
     setActiveNav(id);
-    sessionStorage.setItem(SESSION_KEY, id);
+    window.history.pushState(null, "", `?s=${id}`);
   };
 
   const handle_logout = async () => {

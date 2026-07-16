@@ -4,7 +4,7 @@ export default function Colecciones_dashboard() {
   return (
     <div>
       <Link
-        href={"/papiro/collection"}
+        href={"/papiro/collection?coleccion=archivo_miguel_covarrubias"}
         className="card bg-base-100 w-64 h-84 shadow-xl"
       >
         <figure>

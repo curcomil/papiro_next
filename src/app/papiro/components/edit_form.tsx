@@ -1,13 +1,14 @@
 "use client";
 
 import Swal from "sweetalert2";
-import { amcService } from "../services/amc_xlibris";
+import { updateCarpeta, updateItem } from "../services/amc_xlibris";
 import type { Carpeta, Item } from "../services/amc_xlibris";
 
 // ─────────────────────────────────────────────
 // Tipos
 // ─────────────────────────────────────────────
 interface EditFormProps {
+  coleccion: string;
   elemento: Carpeta | Item;
   close_modal: () => void;
   onUpdate: any;
@@ -82,6 +83,7 @@ const TextAreaField = ({
 // Componente principal
 // ─────────────────────────────────────────────
 export const EditForm = ({
+  coleccion,
   elemento,
   close_modal,
   onUpdate,
@@ -125,8 +127,8 @@ export const EditForm = ({
 
         const request =
           elemento.type === "carpeta"
-            ? amcService.updateCarpeta(elemento._id, datosActualizados)
-            : amcService.updateItem(elemento._id, datosActualizados);
+            ? updateCarpeta(coleccion, elemento._id, datosActualizados)
+            : updateItem(coleccion, elemento._id, datosActualizados);
 
         request
           .then((res: any) => {
