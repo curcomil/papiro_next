@@ -11,6 +11,11 @@ module.exports = {
       watch: false,
       env: {
         NODE_ENV: "production",
+        // Dirección del backend
+        API_URL: "http://127.0.0.1:5000",
+        // Servidor de pruebas sin TLS: permite guardar la cookie de sesión por HTTP.
+        // Quitar esta línea cuando haya HTTPS.
+        COOKIE_SECURE: "false",
       },
     },
   ],

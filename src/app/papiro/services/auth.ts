@@ -2,7 +2,11 @@
 
 import { cookies } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:5000";
+const API_URL = process.env.API_URL ?? "http://127.0.0.1:5000";
+
+// En un servidor sin TLS (HTTP) el navegador descarta las cookies `Secure`.
+// Por defecto va en `true`; se pone `COOKIE_SECURE=false` mientras no haya HTTPS.
+const COOKIE_SECURE = process.env.COOKIE_SECURE !== "false";
 
 const ROLE_REDIRECT: Record<string, string> = {
   admin: "/papiro/dashboard",
@@ -60,7 +64,7 @@ export async function login(data: LoginData): Promise<ActionResult> {
   // Token HttpOnly — solo el servidor lo puede leer
   cookieStore.set("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: COOKIE_SECURE,
     sameSite: "lax",
     maxAge: 60 * 60 * 8,
     path: "/",
@@ -69,7 +73,7 @@ export async function login(data: LoginData): Promise<ActionResult> {
   // User info — el cliente puede leerla para mostrar nombre y rol
   cookieStore.set("user", JSON.stringify(user), {
     httpOnly: false,
-    secure: process.env.NODE_ENV === "production",
+    secure: COOKIE_SECURE,
     sameSite: "lax",
     maxAge: 60 * 60 * 8,
     path: "/",
