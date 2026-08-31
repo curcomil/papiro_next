@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Item } from "../services/amc_xlibris";
+import type { Item } from "../services/amc_xlibris.types";
 import { useRef } from "react";
 
 type ItemDetailProps = {

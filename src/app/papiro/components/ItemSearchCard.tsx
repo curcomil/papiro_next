@@ -1,4 +1,4 @@
-import type { Item } from "../services/amc_xlibris";
+import type { Item } from "../services/amc_xlibris.types";
 
 type ItemSearchCardProps = {
   item: Item;

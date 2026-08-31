@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { getCarpetas, getItems, findbyfilter } from "../services/amc_xlibris";
-import type { Carpeta, Item } from "../services/amc_xlibris";
+import type { Carpeta, Item } from "../services/amc_xlibris.types";
 import { EditForm } from "../components/edit_form";
 import { LoadingZone } from "../components/LoadingZone";
 import { ThemeToggle } from "../components/ThemeToggle";

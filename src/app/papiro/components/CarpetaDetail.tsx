@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Carpeta } from "../services/amc_xlibris";
+import type { Carpeta } from "../services/amc_xlibris.types";
 
 type CarpetaDetailProps = {
   carpeta: Carpeta;

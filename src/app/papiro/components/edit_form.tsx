@@ -2,7 +2,7 @@
 
 import Swal from "sweetalert2";
 import { updateCarpeta, updateItem } from "../services/amc_xlibris";
-import type { Carpeta, Item } from "../services/amc_xlibris";
+import type { Carpeta, Item } from "../services/amc_xlibris.types";
 
 // ─────────────────────────────────────────────
 // Tipos

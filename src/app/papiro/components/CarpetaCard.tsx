@@ -1,4 +1,4 @@
-import type { Carpeta } from "../services/amc_xlibris";
+import type { Carpeta } from "../services/amc_xlibris.types";
 
 type CarpetaCardProps = {
   carpeta: Carpeta;
