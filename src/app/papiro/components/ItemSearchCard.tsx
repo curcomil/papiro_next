@@ -21,10 +21,10 @@ export function ItemSearchCard({
             : "bg-base-200 border-transparent shadow-sm hover:shadow-md hover:border-primary"
         }`}
     >
-      {item.papiro_data.imagen_url ? (
+      {item.portada_url ? (
         <img
-          src={item.papiro_data.imagen_url}
-          alt={item.dc_metadata.titulo}
+          src={item.portada_url}
+          alt={item.metadata.titulo}
           className="w-30 h-30 2xl:w-40 2xl:h-40 object-cover rounded-lg"
         />
       ) : (
@@ -45,11 +45,11 @@ export function ItemSearchCard({
         </div>
       )}
       <p className="font-semibold text-xs leading-tight line-clamp-2">
-        {item.dc_metadata.titulo || "Sin título"}
+        {item.metadata.titulo || "Sin título"}
       </p>
-      {item.dc_metadata.numero && (
+      {item.metadata.clasificacion_local && (
         <p className="text-xs text-base-content/50">
-          Inv. {item.dc_metadata.numero}
+          Inv. {item.metadata.clasificacion_local}
         </p>
       )}
     </div>

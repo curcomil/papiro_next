@@ -2,6 +2,7 @@
 
 import UsersTable from "./users_dashboard";
 import type { User } from "../../services/users.types";
+import type { ColeccionDocument } from "../../services/xmlibris.types";
 import type { FetchMap } from "../page";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import Colecciones_dashboard from "./colecciones_dashboard";
@@ -255,10 +256,16 @@ interface Props {
   current_user: CurrentUser;
   fetchMap: FetchMap;
   users: User[];
+  colecciones: ColeccionDocument[];
 }
 
 // ── Main ───────────────────────────────────────────────
-export default function AdminView({ current_user, fetchMap, users }: Props) {
+export default function AdminView({
+  current_user,
+  fetchMap,
+  users,
+  colecciones,
+}: Props) {
   const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
   const router = useRouter();
 
@@ -293,7 +300,7 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
   return (
     <div className="min-h-screen flex bg-base-200">
       {/* ── Sidebar ── */}
-      <aside className="w-56 shrink-0 flex flex-col bg-base-100 text-base-content min-h-screen sticky top-0">
+      <aside className="w-56 shrink-0 flex flex-col bg-base-100 text-base-content h-screen sticky top-0 self-start overflow-y-auto">
         <div className="px-6 py-6 border-b border-primary/50">
           <span className="login text-xl tracking-wide">Papiro</span>
           <p className="home text-xs text-base-content/40 font-light mt-0.5">
@@ -435,7 +442,12 @@ export default function AdminView({ current_user, fetchMap, users }: Props) {
           {activeNav === "users" && (
             <UsersTable users={users} FetchStatus={fetchMap.users} />
           )}
-          {activeNav === "colecciones" && <Colecciones_dashboard />}
+          {activeNav === "colecciones" && (
+            <Colecciones_dashboard
+              colecciones={colecciones}
+              fetchStatus={fetchMap.colecciones}
+            />
+          )}
 
           {["digitizer", "coordinator", "chief"].includes(activeNav) && (
             <div className="flex flex-col items-center justify-center py-24 gap-4 text-base-content/30">

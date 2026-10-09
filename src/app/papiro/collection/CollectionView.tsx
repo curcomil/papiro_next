@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { getCarpetas, getItems, findbyfilter } from "../services/amc_xlibris";
-import type { Carpeta, Item } from "../services/amc_xlibris.types";
+import { getSubcolecciones, getItems, findbyfilter } from "../services/amc_xlibris";
+import type { Carpeta, Item, Pagination } from "../services/amc_xlibris.types";
 import { EditForm } from "../components/edit_form";
 import { LoadingZone } from "../components/LoadingZone";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -52,6 +52,7 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
   >(null);
   const [items, setItems] = useState<Item[]>([]);
   const [item_seleccionado, setItemSeleccionado] = useState<Item | null>(null);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [fetchState, setFetchState] = useState<FetchState>("loading");
   const [itemsFetchState, setItemsFetchState] = useState<FetchState>("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -93,7 +94,9 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
       filtro: filtro_final,
     })
       .then((data) => {
-        if (data?.data[0]?.type === "item") {
+        // Se ramifica por lo que pidió el usuario, no por un campo del
+        // documento: los items migrados ya no traen `type`.
+        if (filter.nombre === "item") {
           setRespuestaTypeItem(true);
           setItemsBusqueda(data.data as Item[]);
           const firstItem = (data.data as Item[])[0] ?? null;
@@ -118,7 +121,7 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    getCarpetas(coleccion)
+    getSubcolecciones(coleccion)
       .then((data) => {
         setCarpetas(data);
         setCarpetaSeleccionada(data[0] ?? null);
@@ -136,10 +139,12 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
     if (!carpeta_seleccionada || respuestaTypeItem) return;
     setItems([]);
     setItemSeleccionado(null);
+    setPagination(null);
     setItemsFetchState("loading");
-    getItems(coleccion, carpeta_seleccionada.subcoleccion_normalizada)
-      .then((data) => {
-        setItems(data);
+    getItems(coleccion, carpeta_seleccionada.setspec_subcollection)
+      .then(({ items, pagination }) => {
+        setItems(items);
+        setPagination(pagination);
         setItemsFetchState("success");
       })
       .catch(() => setItemsFetchState("error"));
@@ -285,9 +290,11 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
                   <div className="grid grid-cols-3 2xl:grid-cols-4 gap-2">
                     {carpetas.map((c) => (
                       <CarpetaCard
-                        key={c._id}
+                        key={c.internal_id}
                         carpeta={c}
-                        seleccionada={c._id === carpeta_seleccionada?._id}
+                        seleccionada={
+                          c.internal_id === carpeta_seleccionada?.internal_id
+                        }
                         onClick={() => setCarpetaSeleccionada(c)}
                       />
                     ))}
@@ -331,7 +338,8 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
                       />
                       <Modal dialogRef={modalCarpetaRef}>
                         <EditForm
-                          key={carpeta_seleccionada._id}
+                          key={carpeta_seleccionada.internal_id}
+                          tipo="carpeta"
                           coleccion={coleccion}
                           elemento={carpeta_seleccionada}
                           close_modal={() => modalCarpetaRef.current?.close()}
@@ -349,7 +357,9 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
                     Items
                     {itemsFetchState === "success" && (
                       <span className="ml-2 font-normal text-base-content/50">
-                        {items.length} encontrados
+                        {pagination?.has_more
+                          ? `mostrando ${items.length} (hay más)`
+                          : `${items.length} encontrados`}
                       </span>
                     )}
                   </h3>
@@ -396,6 +406,7 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
                       <Modal dialogRef={modalItemRef}>
                         <EditForm
                           key={item_seleccionado._id}
+                          tipo="item"
                           coleccion={coleccion}
                           elemento={item_seleccionado}
                           close_modal={() => modalItemRef.current?.close()}
@@ -422,7 +433,8 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
                         />
                         <Modal dialogRef={modalCarpetaRef}>
                           <EditForm
-                            key={carpeta_seleccionada._id}
+                            key={carpeta_seleccionada.internal_id}
+                            tipo="carpeta"
                             coleccion={coleccion}
                             elemento={carpeta_seleccionada}
                             close_modal={() => modalCarpetaRef.current?.close()}
@@ -452,6 +464,7 @@ export default function CollectionView({ coleccion }: CollectionViewProps) {
                       <Modal dialogRef={modalItemRef}>
                         <EditForm
                           key={itemBusquedaSeleccionado._id}
+                          tipo="item"
                           coleccion={coleccion}
                           elemento={itemBusquedaSeleccionado}
                           close_modal={() => modalItemRef.current?.close()}

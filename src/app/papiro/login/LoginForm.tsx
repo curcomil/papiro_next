@@ -54,6 +54,9 @@ export default function LoginForm({ error }: Props) {
           timerProgressBar: true,
         });
         router.push(result.redirect);
+        // Fuerza a re-ejecutar el RSC del destino para que el middleware y el
+        // dashboard vean las cookies recién escritas por la server action.
+        router.refresh();
       }
     } catch {
       Swal.fire({

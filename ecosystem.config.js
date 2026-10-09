@@ -13,9 +13,11 @@ module.exports = {
         NODE_ENV: "production",
         // Dirección del backend
         API_URL: "http://127.0.0.1:5000",
-        // Servidor de pruebas sin TLS: permite guardar la cookie de sesión por HTTP.
-        // Quitar esta línea cuando haya HTTPS.
-        COOKIE_SECURE: "false",
+        // Sin TLS (HTTP) el frontend deduce que la cookie NO debe ser `Secure`
+        // leyendo el protocolo real de la petición (x-forwarded-proto), así que
+        // ya no hace falta fijar COOKIE_SECURE aquí. Solo se usa como override
+        // manual; con TLS terminado en un proxy se detecta automáticamente.
+        // COOKIE_SECURE: "false",
       },
     },
   ],

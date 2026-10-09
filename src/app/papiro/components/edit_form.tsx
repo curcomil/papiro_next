@@ -8,25 +8,12 @@ import type { Carpeta, Item } from "../services/amc_xlibris.types";
 // Tipos
 // ─────────────────────────────────────────────
 interface EditFormProps {
+  tipo: "carpeta" | "item";
   coleccion: string;
   elemento: Carpeta | Item;
   close_modal: () => void;
   onUpdate: any;
 }
-
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
-const keywordsToString = (keywords: string[] | undefined): string =>
-  keywords?.join(", ") ?? "";
-
-const stringToKeywords = (keywords: string | undefined): string[] =>
-  keywords
-    ? keywords
-        .split(",")
-        .map((kw) => kw.trim())
-        .filter(Boolean)
-    : [];
 
 // ─────────────────────────────────────────────
 // Subcomponentes de campo
@@ -83,6 +70,7 @@ const TextAreaField = ({
 // Componente principal
 // ─────────────────────────────────────────────
 export const EditForm = ({
+  tipo,
   coleccion,
   elemento,
   close_modal,
@@ -98,25 +86,13 @@ export const EditForm = ({
       string
     >;
 
-    // keywords de carpeta (nivel raíz)
-    if ("keywords" in datosActualizados) {
-      (datosActualizados as Record<string, unknown>).keywords = stringToKeywords(
-        datosActualizados.keywords,
-      );
-    }
-    // keywords de item (nivel papiro_data)
-    if ("papiro_data.keywords" in datosActualizados) {
-      (datosActualizados as Record<string, unknown>)["papiro_data.keywords"] =
-        stringToKeywords(datosActualizados["papiro_data.keywords"]);
-    }
-
     // Cerrar modal primero y esperar animación de DaisyUI antes de mostrar Swal
     close_modal();
 
     setTimeout(() => {
       Swal.fire({
         title: "¿Guardar cambios?",
-        text: `Se actualizará ${elemento.type === "carpeta" ? "la carpeta" : "el item"}`,
+        text: `Se actualizará ${tipo === "carpeta" ? "la carpeta" : "el item"}`,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Sí, actualizar",
@@ -126,9 +102,13 @@ export const EditForm = ({
         if (!result.isConfirmed) return;
 
         const request =
-          elemento.type === "carpeta"
-            ? updateCarpeta(coleccion, elemento._id, datosActualizados)
-            : updateItem(coleccion, elemento._id, datosActualizados);
+          tipo === "carpeta"
+            ? updateCarpeta(
+                coleccion,
+                (elemento as Carpeta).internal_id,
+                datosActualizados,
+              )
+            : updateItem(coleccion, (elemento as Item).internal_id, datosActualizados);
 
         request
           .then((res: any) => {
@@ -153,45 +133,36 @@ export const EditForm = ({
   };
 
   // ── Form carpeta ──
-  if (elemento.type === "carpeta") {
+  if (tipo === "carpeta") {
     const carpeta = elemento as Carpeta;
     return (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-2">
         <div className="flex items-center gap-3 mb-2">
           <img className="w-12" src="/xmlibris/carpeta.png" alt="Carpeta" />
-          <h2 className="font-bold text-xl">{carpeta.subcoleccion}</h2>
+          <h2 className="font-bold text-xl">{carpeta.name_subcollection}</h2>
         </div>
 
+        {/* El body viaja como $set con rutas con punto sobre la subcolección
+            embebida en el registro de colecciones. Solo se aceptan
+            name_subcollection, status y app.*; internal_id y
+            setspec_subcollection no son editables. */}
         <div className="grid grid-cols-2 gap-4">
           <Field
             label="Nombre"
-            name="subcoleccion"
-            defaultValue={carpeta.subcoleccion}
-          />
-          <Field
-            label="Ubicación física"
-            name="ubicacion_fisica"
-            defaultValue={carpeta.ubicacion_fisica}
+            name="name_subcollection"
+            defaultValue={carpeta.name_subcollection}
           />
           <Field
             label="Referencia a la libreta"
-            name="referencia_control"
-            defaultValue={carpeta.referencia_control}
+            name="app.referencia_externa"
+            defaultValue={carpeta.app.referencia_externa}
           />
-          <Field label="URL" name="url" defaultValue={carpeta.url} />
         </div>
-
-        <Field
-          label="Palabras clave (separadas por coma)"
-          name="keywords"
-          defaultValue={keywordsToString(carpeta.keywords)}
-          styles="w-full"
-        />
 
         <TextAreaField
           label="Notas"
-          name="notas"
-          defaultValue={carpeta.notas}
+          name="app.notas"
+          defaultValue={carpeta.app.notas}
         />
 
         <button type="submit" className="mt-2 w-full btn btn-primary">
@@ -202,15 +173,15 @@ export const EditForm = ({
   }
 
   // ── Form item ──
-  if (elemento.type === "item") {
+  if (tipo === "item") {
     const item = elemento as Item;
     return (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-2">
         <div className="flex items-center gap-3 mb-2">
-          {item.papiro_data.imagen_url ? (
+          {item.portada_url ? (
             <img
-              src={item.papiro_data.imagen_url}
-              alt={item.dc_metadata.titulo}
+              src={item.portada_url}
+              alt={item.metadata.titulo}
               className="w-12 h-12 object-cover rounded-lg shadow"
             />
           ) : (
@@ -218,43 +189,59 @@ export const EditForm = ({
               <span className="text-xs text-gray-400">Sin img</span>
             </div>
           )}
-          <h2 className="font-bold text-xl">{item.dc_metadata.titulo || "Sin título"}</h2>
+          <h2 className="font-bold text-xl">
+            {item.metadata.titulo || "Sin título"}
+          </h2>
         </div>
 
+        {/* El body viaja como $set con rutas con punto sobre el documento de
+            'items' (solo metadata.*, app.* e is_published). Los campos que ya no
+            existen en el modelo nuevo — avalúo, URL del item, URL de imagen y
+            palabras clave — se quitaron del formulario.
+            OJO (pendiente): estos nombres son los de AMC. En las colecciones
+            cuyo schema usa "descripcion_fisica", editar la descripción
+            escribiría un campo distinto. Se corrige al pintar el formulario
+            desde el schema de la colección. */}
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Título" name="dc_metadata.titulo" defaultValue={item.dc_metadata.titulo} />
-          <Field label="Autor" name="dc_metadata.autor" defaultValue={item.dc_metadata.autor} />
+          <Field
+            label="Título"
+            name="metadata.titulo"
+            defaultValue={item.metadata.titulo}
+          />
+          <Field
+            label="Autor"
+            name="metadata.autor"
+            defaultValue={item.metadata.autor ?? ""}
+          />
           <Field
             label="Tipología"
-            name="papiro_data.tipo_de_objeto"
-            defaultValue={item.papiro_data.tipo_de_objeto}
+            name="metadata.tipo_de_objeto"
+            defaultValue={item.metadata.tipo_de_objeto ?? ""}
           />
           <Field
             label="Dimensiones"
-            name="dc_metadata.medidas"
-            defaultValue={item.dc_metadata.medidas}
+            name="metadata.medidas"
+            defaultValue={item.metadata.medidas ?? ""}
           />
-          <Field label="Avalúo" name="papiro_data.avaluo" defaultValue={item.papiro_data.avaluo} />
-          <Field label="URL" name="papiro_data.item_url" defaultValue={item.papiro_data.item_url} />
           <Field
-            label="URL imagen"
-            name="papiro_data.imagen_url"
-            defaultValue={item.papiro_data.imagen_url}
+            label="Número de inventario"
+            name="metadata.clasificacion_local"
+            defaultValue={item.metadata.clasificacion_local ?? ""}
           />
         </div>
 
-        <Field
-          label="Palabras clave (separadas por coma)"
-          name="papiro_data.keywords"
-          defaultValue={keywordsToString(item.papiro_data.keywords)}
-          styles="w-full"
-        />
         <TextAreaField
           label="Descripción"
-          name="dc_metadata.descripcion"
-          defaultValue={item.dc_metadata.descripcion}
+          name="metadata.descripcion"
+          defaultValue={
+            item.metadata.descripcion ?? item.metadata.descripcion_fisica ?? ""
+          }
         />
-        <TextAreaField label="Notas" name="papiro_data.notas" defaultValue={item.papiro_data.notas} />
+        <TextAreaField
+          label="Notas"
+          name="app.notas"
+          defaultValue={item.app.notas ?? ""}
+        />
 
         <button type="submit" className="mt-2 w-full btn btn-primary">
           Guardar cambios

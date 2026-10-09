@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Carpeta } from "../services/amc_xlibris.types";
 
 type CarpetaDetailProps = {
@@ -17,33 +16,20 @@ export function CarpetaDetail({ carpeta, onEditar }: CarpetaDetailProps) {
       <div className="flex flex-col flex-1 min-w-0 justify-between">
         <div>
           <h2 className="font-bold text-sm 2xl:text-xl leading-tight truncate">
-            {carpeta.subcoleccion}
+            {carpeta.name_subcollection}
           </h2>
           <div className="mt-1 space-y-0.5">
             {[
-              { label: "Ubicación", value: carpeta.ubicacion_fisica },
-              { label: "Referencia", value: carpeta.referencia_control },
-              { label: "Notas", value: carpeta.notas },
-              { label: "Palabras clave", value: carpeta.keywords?.join(", ") },
+              { label: "Referencia", value: carpeta.app.referencia_externa },
+              { label: "Notas", value: carpeta.app.notas },
             ].map(({ label, value }) => (
               <p key={label} className="text-xs 2xl:text-sm truncate">
                 <span className="font-medium">{label}:</span> {value || "N/A"}
               </p>
             ))}
-            <p className="text-xs 2xl:text-sm">
-              <span className="font-medium">Total items:</span>{" "}
-              {carpeta.items?.length}
-            </p>
           </div>
         </div>
         <div className="flex gap-2 mt-2">
-          {carpeta.url && (
-            <Link href={carpeta.url} target="_blank" rel="noopener noreferrer">
-              <button className="btn btn-primary btn-xs btn-soft 2xl:btn-sm">
-                Ver en Catarina ↗
-              </button>
-            </Link>
-          )}
           <button
             onClick={onEditar}
             className="btn btn-primary btn-xs btn-soft 2xl:btn-sm"

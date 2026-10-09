@@ -1,6 +1,9 @@
 "use server";
 
-import type { Generic_response } from "./xmlibris.types";
+import type {
+  Generic_response,
+  ResponseGetAllCollections,
+} from "./xmlibris.types";
 import { cookies } from "next/headers";
 
 const API_URL = process.env.API_URL ?? "http://127.0.0.1:5000";
@@ -10,6 +13,31 @@ async function getToken(): Promise<string> {
   const token = cookieStore.get("token")?.value;
   if (!token) throw new Error("No autenticado");
   return token;
+}
+
+export async function get_all_collections(): Promise<ResponseGetAllCollections> {
+  try {
+    const response = await fetch(`${API_URL}/api/xmlibris/getallcollections`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const res = await response.json().catch(() => null);
+    if (!response.ok)
+      return {
+        success: false,
+        message: res?.message ?? "Error al crear colección",
+        data: [],
+      };
+    return { success: true, message: res.message ?? "Éxito", data: res.data };
+  } catch {
+    return {
+      success: false,
+      message: "No se pudo conectar con el servidor",
+      data: [],
+    };
+  }
 }
 
 export async function new_collection(data: any): Promise<Generic_response> {

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import New_collection_form from "./new_collection_form";
 import type { Coordinators } from "../../services/users.types";
+import type { ColeccionDocument } from "../../services/xmlibris.types";
 import type { FetchMap } from "../page";
 
 export interface CurrentUser {
@@ -163,12 +164,14 @@ interface Props {
   current_user: CurrentUser;
   coordinators: Coordinators[];
   fetchMap: FetchMap;
+  colecciones: ColeccionDocument[];
 }
 
 export function Digitizer_page({
   current_user,
   coordinators,
   fetchMap,
+  colecciones,
 }: Props) {
   const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
   const router = useRouter();
@@ -203,7 +206,7 @@ export function Digitizer_page({
 
   return (
     <div className="min-h-screen flex bg-base-200">
-      <aside className="w-56 shrink-0 flex flex-col bg-base-100 text-base-content min-h-screen sticky top-0">
+      <aside className="w-56 shrink-0 flex flex-col bg-base-100 text-base-content h-screen sticky top-0 self-start overflow-y-auto">
         <div className="px-6 py-6 border-b border-primary/50">
           <span className="login text-xl tracking-wide">Papiro</span>
           <p className="home text-xs text-base-content/40 font-light mt-0.5">
@@ -293,7 +296,12 @@ export function Digitizer_page({
             />
           )}
 
-          {activeNav === "colecciones" && <Colecciones_dashboard />}
+          {activeNav === "colecciones" && (
+            <Colecciones_dashboard
+              colecciones={colecciones}
+              fetchStatus={fetchMap.colecciones}
+            />
+          )}
         </div>
       </main>
     </div>

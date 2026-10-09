@@ -27,12 +27,7 @@ export function CarpetaCard({
         className="w-10 h-10 2xl:w-14 2xl:h-14 object-contain"
       />
       <p className="font-semibold text-xs leading-tight line-clamp-2">
-        {carpeta.subcoleccion}
-      </p>
-      <p
-        className={`text-xs ${seleccionada ? "text-primary-content/50" : "text-base-content/50"}`}
-      >
-        {carpeta.items?.length ?? 0} items
+        {carpeta.name_subcollection}
       </p>
     </div>
   );
