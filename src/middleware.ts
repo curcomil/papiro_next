@@ -13,5 +13,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/papiro/dashboard/:path*", "/papiro/collection/:path*"],
+  matcher: ["/papiro/dashboard/:path*"],
 };

@@ -2,10 +2,8 @@
 
 import UsersTable from "./users_dashboard";
 import type { User } from "../../services/users.types";
-import type { ColeccionDocument } from "../../services/xmlibris.types";
 import type { FetchMap } from "../page";
 import { ThemeToggle } from "../../components/ThemeToggle";
-import Colecciones_dashboard from "./colecciones_dashboard";
 import { logout } from "../../services/auth";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -244,7 +242,6 @@ const mockActivity = [
 const navItems = [
   { id: "overview", label: "General", icon: Icons.general },
   { id: "users", label: "Usuarios", icon: Icons.users },
-  { id: "colecciones", label: "Colecciones", icon: Icons.collection },
   { id: "digitizer", label: "Digitalizador", icon: Icons.digitizer },
   { id: "coordinator", label: "Coordinadora", icon: Icons.coordinator },
   { id: "chief", label: "Jefatura", icon: Icons.chief },
@@ -256,7 +253,6 @@ interface Props {
   current_user: CurrentUser;
   fetchMap: FetchMap;
   users: User[];
-  colecciones: ColeccionDocument[];
 }
 
 // ── Main ───────────────────────────────────────────────
@@ -264,7 +260,6 @@ export default function AdminView({
   current_user,
   fetchMap,
   users,
-  colecciones,
 }: Props) {
   const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
   const router = useRouter();
@@ -366,7 +361,6 @@ export default function AdminView({
             {activeNav === "overview" &&
               `Bienvenidx, ${current_user.name.split(" ")[0]} ${current_user.name.split(" ")[1]}`}
             {activeNav === "users" && "Gestión de usuarios"}
-            {activeNav === "colecciones" && "Visualizador de colecciones"}
             {activeNav === "digitizer" && "Vista digitalizador"}
             {activeNav === "coordinator" && "Vista coordinadora"}
             {activeNav === "chief" && "Vista jefatura"}
@@ -441,12 +435,6 @@ export default function AdminView({
 
           {activeNav === "users" && (
             <UsersTable users={users} FetchStatus={fetchMap.users} />
-          )}
-          {activeNav === "colecciones" && (
-            <Colecciones_dashboard
-              colecciones={colecciones}
-              fetchStatus={fetchMap.colecciones}
-            />
           )}
 
           {["digitizer", "coordinator", "chief"].includes(activeNav) && (

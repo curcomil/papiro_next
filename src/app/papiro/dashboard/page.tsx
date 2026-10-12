@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import Admin_page from "./components/admin_page";
-import { getUsers, getcoordinators } from "../services/users";
-import { get_all_collections } from "../services/xmlibris";
+import { getUsers } from "../services/users";
 import { redirect } from "next/navigation";
 import { Digitizer_page } from "./components/digitizer_page";
 
@@ -26,19 +25,12 @@ export default async function Dashboard() {
 
   switch (user.role) {
     case "admin":
-      const [users, colecciones] = await Promise.all([
-        getUsers(),
-        get_all_collections(),
-      ]);
+      const users = await getUsers();
 
       const fetchMap: FetchMap = {
         users: {
           success: users.success,
           message: users.message,
-        },
-        colecciones: {
-          success: colecciones.success,
-          message: colecciones.message,
         },
       };
 
@@ -47,35 +39,11 @@ export default async function Dashboard() {
           current_user={user}
           fetchMap={fetchMap}
           users={users.data}
-          colecciones={colecciones.data}
         />
       );
 
     case "digitizer":
-      const [coordinators, colecciones_digi] = await Promise.all([
-        getcoordinators(),
-        get_all_collections(),
-      ]);
-
-      const fetchMap_digi: FetchMap = {
-        coordinators: {
-          success: coordinators.success,
-          message: coordinators.message,
-        },
-        colecciones: {
-          success: colecciones_digi.success,
-          message: colecciones_digi.message,
-        },
-      };
-
-      return (
-        <Digitizer_page
-          current_user={user}
-          coordinators={coordinators.data}
-          fetchMap={fetchMap_digi}
-          colecciones={colecciones_digi.data}
-        />
-      );
+      return <Digitizer_page current_user={user} />;
 
     case "coordinator":
       return <div>Coordinator</div>;

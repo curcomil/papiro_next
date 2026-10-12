@@ -1,14 +1,9 @@
 "use client";
 
 import { ThemeToggle } from "../../components/ThemeToggle";
-import Colecciones_dashboard from "./colecciones_dashboard";
 import { logout } from "../../services/auth";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import New_collection_form from "./new_collection_form";
-import type { Coordinators } from "../../services/users.types";
-import type { ColeccionDocument } from "../../services/xmlibris.types";
-import type { FetchMap } from "../page";
 
 export interface CurrentUser {
   username: string;
@@ -64,22 +59,6 @@ const Icons = {
         strokeLinejoin="round"
         strokeWidth={1.5}
         d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
-      />
-    </svg>
-  ),
-  collection: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122"
       />
     </svg>
   ),
@@ -151,28 +130,18 @@ const Icons = {
 
 const navItems = [
   { id: "overview", label: "General", icon: Icons.general },
-  { id: "new_collection", label: "Nueva Colección", icon: Icons.crear },
   { id: "new_folder", label: "Nueva Carpeta", icon: Icons.crear },
   { id: "new_item", label: "Nuevo Item", icon: Icons.crear },
   { id: "check", label: "Revisiones", icon: Icons.check },
-  { id: "colecciones", label: "Colecciones", icon: Icons.collection },
 ];
 
 const DEFAULT_SECTION = "overview";
 
 interface Props {
   current_user: CurrentUser;
-  coordinators: Coordinators[];
-  fetchMap: FetchMap;
-  colecciones: ColeccionDocument[];
 }
 
-export function Digitizer_page({
-  current_user,
-  coordinators,
-  fetchMap,
-  colecciones,
-}: Props) {
+export function Digitizer_page({ current_user }: Props) {
   const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
   const router = useRouter();
 
@@ -270,8 +239,6 @@ export function Digitizer_page({
           <h1 className="login text-3xl text-base-content">
             {activeNav === "overview" &&
               `Bienvenidx, ${current_user.name.split(" ")[0]} ${current_user.name.split(" ")[1]}`}
-            {activeNav === "colecciones" && "Visualizador de colecciones"}
-            {activeNav === "new_collection" && "Crear una nueva colección"}
             {activeNav === "new_folder" &&
               "Agregar un nuevo folder a una colección existente"}
             {activeNav === "new_item" &&
@@ -286,21 +253,6 @@ export function Digitizer_page({
                 Este componente se construirá próximamente
               </p>
             </div>
-          )}
-
-          {activeNav === "new_collection" && (
-            <New_collection_form
-              COORDINATORS={coordinators}
-              fetch_map={fetchMap}
-              user={current_user}
-            />
-          )}
-
-          {activeNav === "colecciones" && (
-            <Colecciones_dashboard
-              colecciones={colecciones}
-              fetchStatus={fetchMap.colecciones}
-            />
           )}
         </div>
       </main>
