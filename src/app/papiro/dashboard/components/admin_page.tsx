@@ -1,12 +1,13 @@
 "use client";
 
-import UsersTable from "./users_dashboard";
-import type { User } from "../../services/users.types";
-import type { FetchMap } from "../page";
+import UsersPanel from "@/modules/users/presentation/UsersPanel";
+import NuevoPanel from "@/modules/nuevo/presentation/NuevoPanel";
+import type { User } from "@/modules/users/domain/user";
+import type { LoadStatus } from "@/modules/users/domain/user-repository";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { logout } from "../../services/auth";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSectionParam } from "../hooks/use-section-param";
 
 interface CurrentUser {
   username: string;
@@ -14,24 +15,14 @@ interface CurrentUser {
   role: string;
 }
 
+interface Props {
+  current_user: CurrentUser;
+  users: User[];
+  usersStatus: LoadStatus;
+}
+
 // ── Iconos ─────────────────────────────────────────────
 const Icons = {
-  general: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M3.75 3.75h6.75v6.75H3.75V3.75zm9.75 0h6.75v4.5h-6.75v-4.5zM3.75 13.5h4.5v6.75h-4.5V13.5zm6.75 3h9.75v3.75H10.5V16.5z"
-      />
-    </svg>
-  ),
   users: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +39,7 @@ const Icons = {
       />
     </svg>
   ),
-  folder: (
+  nuevo: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className="size-4"
@@ -60,39 +51,7 @@ const Icons = {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={1.5}
-        d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
-      />
-    </svg>
-  ),
-  collection: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122"
-      />
-    </svg>
-  ),
-  clock: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+        d="M12 4.5v15m7.5-7.5h-15"
       />
     </svg>
   ),
@@ -112,180 +71,37 @@ const Icons = {
       />
     </svg>
   ),
-  digitizer: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-      />
-    </svg>
-  ),
-  coordinator: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"
-      />
-    </svg>
-  ),
-  chief: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
-      />
-    </svg>
-  ),
 };
 
-// ── Stat Card ──────────────────────────────────────────
-function StatCard({
-  label,
-  value,
-  icon,
-  accent = false,
-}: {
-  label: string;
-  value: string | number;
-  icon: React.ReactNode;
-  accent?: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-sm border p-5 flex flex-col gap-3 ${accent ? "bg-primary text-primary-content border-primary" : "bg-base-200 border-primary/20"}`}
-    >
-      <div className="flex items-center justify-between">
-        <span
-          className={`home text-xs uppercase tracking-widest font-normal ${accent ? "text-primary-content/70" : "text-base-content/50"}`}
-        >
-          {label}
-        </span>
-        <span
-          className={
-            accent ? "text-primary-content/70" : "text-base-content/40"
-          }
-        >
-          {icon}
-        </span>
-      </div>
-      <p
-        className={`login text-3xl ${accent ? "text-primary-content" : "text-base-content"}`}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
-
-// ── Constantes ─────────────────────────────────────────
-const roleLabel: Record<string, string> = {
-  digitizer: "Digitalizador",
-  coordinator: "Coordinadora",
-  chief: "Jefatura",
-};
-
-const mockActivity = [
+// ── Secciones ──────────────────────────────────────────
+const SECTIONS = [
   {
-    user: "curcomil",
-    action: "Digitalizó carpeta",
-    target: "Africa - Fotografías",
-    time: "Hace 2h",
-    status: "pending_metadata",
+    id: "usuarios",
+    label: "Usuarios",
+    title: "Gestión de usuarios",
+    icon: Icons.users,
   },
-  {
-    user: "marina",
-    action: "Completó metadatos",
-    target: "Amazon Carib Arawak",
-    time: "Hace 4h",
-    status: "pending_approval",
-  },
-  {
-    user: "jefatura",
-    action: "Aprobó carpeta",
-    target: "Abstracto Decorativo",
-    time: "Ayer",
-    status: "approved",
-  },
-  {
-    user: "curcomil",
-    action: "Digitalizó carpeta",
-    target: "Africa - Bocetos",
-    time: "Ayer",
-    status: "pending_metadata",
-  },
-];
+  { id: "nuevo", label: "Nuevo", title: "Nuevo", icon: Icons.nuevo },
+] as const;
 
-const navItems = [
-  { id: "overview", label: "General", icon: Icons.general },
-  { id: "users", label: "Usuarios", icon: Icons.users },
-  { id: "digitizer", label: "Digitalizador", icon: Icons.digitizer },
-  { id: "coordinator", label: "Coordinadora", icon: Icons.coordinator },
-  { id: "chief", label: "Jefatura", icon: Icons.chief },
-];
+type SectionId = (typeof SECTIONS)[number]["id"];
 
-const DEFAULT_SECTION = "overview";
-
-interface Props {
-  current_user: CurrentUser;
-  fetchMap: FetchMap;
-  users: User[];
-}
+const DEFAULT_SECTION: SectionId = "usuarios";
+const SECTION_IDS = SECTIONS.map((section) => section.id);
 
 // ── Main ───────────────────────────────────────────────
 export default function AdminView({
   current_user,
-  fetchMap,
   users,
+  usersStatus,
 }: Props) {
-  const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
   const router = useRouter();
+  const [section, goToSection] = useSectionParam(
+    SECTION_IDS,
+    DEFAULT_SECTION,
+  );
 
-  // Restaurar sección desde la URL al montar
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const s = params.get("s");
-    if (s && navItems.some((n) => n.id === s)) setActiveNav(s);
-  }, []);
-
-  // Sincronizar con los botones atrás/adelante del navegador
-  useEffect(() => {
-    const onPopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      const s = params.get("s") ?? DEFAULT_SECTION;
-      setActiveNav(navItems.some((n) => n.id === s) ? s : DEFAULT_SECTION);
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
-  const handleNav = (id: string) => {
-    setActiveNav(id);
-    window.history.pushState(null, "", `?s=${id}`);
-  };
+  const active = SECTIONS.find((item) => item.id === section) ?? SECTIONS[0];
 
   const handle_logout = async () => {
     await logout();
@@ -304,15 +120,15 @@ export default function AdminView({
         </div>
 
         <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
-          {navItems.map((item) => (
+          {SECTIONS.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleNav(item.id)}
+              onClick={() => goToSection(item.id)}
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-sm text-left transition-colors w-full
                 home text-sm font-light
                 ${
-                  activeNav === item.id
+                  active.id === item.id
                     ? "bg-primary text-primary-content"
                     : "text-base-content/70 hover:text-base-content hover:bg-primary/10"
                 }
@@ -355,99 +171,16 @@ export default function AdminView({
       <main className="flex-1 overflow-y-auto">
         <div className="px-10 pt-10 pb-6 border-b border-primary/50">
           <p className="home text-xs text-base-content/40 uppercase tracking-widest font-light mb-1">
-            {navItems.find((n) => n.id === activeNav)?.label}
+            {active.label}
           </p>
-          <h1 className="login text-3xl text-base-content">
-            {activeNav === "overview" &&
-              `Bienvenidx, ${current_user.name.split(" ")[0]} ${current_user.name.split(" ")[1]}`}
-            {activeNav === "users" && "Gestión de usuarios"}
-            {activeNav === "digitizer" && "Vista digitalizador"}
-            {activeNav === "coordinator" && "Vista coordinadora"}
-            {activeNav === "chief" && "Vista jefatura"}
-          </h1>
+          <h1 className="login text-3xl text-base-content">{active.title}</h1>
         </div>
 
         <div className="px-10 py-8">
-          {activeNav === "overview" && (
-            <div className="flex flex-col gap-8">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard
-                  label="Usuarios activos"
-                  value={4}
-                  icon={Icons.users}
-                  accent
-                />
-                <StatCard
-                  label="Colecciones"
-                  value={3}
-                  icon={Icons.collection}
-                />
-                <StatCard
-                  label="Carpetas totales"
-                  value={142}
-                  icon={Icons.folder}
-                />
-                <StatCard label="Pendientes" value={7} icon={Icons.clock} />
-              </div>
-              <div>
-                <h2 className="login text-lg text-base-content mb-4">
-                  Actividad reciente
-                </h2>
-                <div className="flex flex-col gap-2">
-                  {mockActivity.map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between px-4 py-3 bg-base-200 rounded-sm border border-base-300"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="size-7 rounded-sm bg-primary/10 flex items-center justify-center login text-xs text-primary shrink-0">
-                          {item.user.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="home text-sm font-normal text-base-content">
-                            {item.action} —{" "}
-                            <span className="text-base-content/60">
-                              {item.target}
-                            </span>
-                          </p>
-                          <p className="home text-xs text-base-content/40 font-light">
-                            {item.user} · {item.time}
-                          </p>
-                        </div>
-                      </div>
-                      <span
-                        className={`badge badge-sm home font-light
-                        ${item.status === "approved" ? "badge-success" : ""}
-                        ${item.status === "pending_metadata" ? "badge-warning" : ""}
-                        ${item.status === "pending_approval" ? "badge-info" : ""}
-                      `}
-                      >
-                        {item.status === "approved" && "Aprobado"}
-                        {item.status === "pending_metadata" && "Sin metadatos"}
-                        {item.status === "pending_approval" && "En revisión"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {section === "usuarios" && (
+            <UsersPanel users={users} status={usersStatus} />
           )}
-
-          {activeNav === "users" && (
-            <UsersTable users={users} FetchStatus={fetchMap.users} />
-          )}
-
-          {["digitizer", "coordinator", "chief"].includes(activeNav) && (
-            <div className="flex flex-col items-center justify-center py-24 gap-4 text-base-content/30">
-              <div className="size-12 rounded-sm border-2 border-dashed border-base-300 flex items-center justify-center">
-                {navItems.find((n) => n.id === activeNav)?.icon}
-              </div>
-              <p className="login text-xl">{roleLabel[activeNav]}</p>
-              <p className="home text-sm font-light">
-                Este componente se construirá próximamente
-              </p>
-            </div>
-          )}
+          {section === "nuevo" && <NuevoPanel />}
         </div>
       </main>
     </div>

@@ -1,17 +1,7 @@
-// services/users.types.ts — sin directiva, solo tipos
-export type UserRole = "digitizer" | "coordinator" | "chief" | "admin";
+// La entidad User y sus roles viven en el dominio del módulo de usuarios.
+import type { User, UserRole } from "@/modules/users/domain/user";
 
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  username: string;
-  password: boolean;
-  role: UserRole;
-  assignedCollections: string[];
-  accessibleRoles: UserRole[];
-  isActive: boolean;
-}
+export type { User, UserRole };
 
 export interface UsersResponse {
   success: boolean;

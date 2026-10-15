@@ -1,17 +1,9 @@
 import { cookies } from "next/headers";
-import Admin_page from "./components/admin_page";
-import { getUsers } from "../services/users";
 import { redirect } from "next/navigation";
+import Admin_page from "./components/admin_page";
 import { Digitizer_page } from "./components/digitizer_page";
-
-export interface FetchStatus {
-  success: boolean;
-  message: string;
-}
-
-export interface FetchMap {
-  [key: string]: FetchStatus;
-}
+import { createUserUseCases } from "@/modules/users/application/user-use-cases";
+import { createUserRepository } from "@/modules/users/infrastructure/server-action-user-repository";
 
 export default async function Dashboard() {
   const cookieStore = await cookies();
@@ -24,23 +16,18 @@ export default async function Dashboard() {
   }
 
   switch (user.role) {
-    case "admin":
-      const users = await getUsers();
-
-      const fetchMap: FetchMap = {
-        users: {
-          success: users.success,
-          message: users.message,
-        },
-      };
+    case "admin": {
+      const userUseCases = createUserUseCases(createUserRepository());
+      const result = await userUseCases.listUsers();
 
       return (
         <Admin_page
           current_user={user}
-          fetchMap={fetchMap}
-          users={users.data}
+          users={result.users}
+          usersStatus={{ success: result.success, message: result.message }}
         />
       );
+    }
 
     case "digitizer":
       return <Digitizer_page current_user={user} />;
