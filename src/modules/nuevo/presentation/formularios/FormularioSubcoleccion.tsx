@@ -1,13 +1,17 @@
-import { FormCard } from "../components/FormCard";
+import { createColeccionesUseCases } from "../../application/list-colecciones";
+import { createColeccionesRepository } from "../../infrastructure/fetch-colecciones-repository";
+import SubcoleccionForm from "./SubcoleccionForm";
 import type { FormularioProps } from "./tipos";
 
-/** Pendiente: aún no se definen los campos de la subcolección. */
-export default function FormularioSubcoleccion({ info }: FormularioProps) {
+export default async function FormularioSubcoleccion({ info }: FormularioProps) {
+  const useCases = createColeccionesUseCases(createColeccionesRepository());
+  const result = await useCases.listColecciones();
+
   return (
-    <FormCard titulo={info.tituloFormulario} descripcion={info.descripcion}>
-      <p className="home py-6 text-sm font-light text-base-content/60">
-        Aquí va el contenido de tu formulario...
-      </p>
-    </FormCard>
+    <SubcoleccionForm
+      info={info}
+      colecciones={result.colecciones}
+      errorCarga={result.success ? "" : result.message}
+    />
   );
 }

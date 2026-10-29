@@ -1,9 +1,5 @@
 import type { NuevaColeccionPayload } from "./nueva-coleccion";
-
-export interface OperationResult {
-  success: boolean;
-  message: string;
-}
+import type { OperationResult } from "./resultado";
 
 export interface NuevaColeccionRepository {
   create(payload: NuevaColeccionPayload): Promise<OperationResult>;

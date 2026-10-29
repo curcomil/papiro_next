@@ -1,13 +1,18 @@
-import { FormCard } from "../components/FormCard";
+import { createColeccionesUseCases } from "../../application/list-colecciones";
+import { createColeccionesRepository } from "../../infrastructure/fetch-colecciones-repository";
+import RegistroForm from "./RegistroForm";
 import type { FormularioProps } from "./tipos";
 
-/** Pendiente: aún no se definen los campos del registro. */
-export default function FormularioRegistro({ info }: FormularioProps) {
+export default async function FormularioRegistro({ info }: FormularioProps) {
+  const useCases = createColeccionesUseCases(createColeccionesRepository());
+  // Aquí sí hacen falta las subcolecciones para el segundo select.
+  const result = await useCases.listColecciones({ conSubcolecciones: true });
+
   return (
-    <FormCard titulo={info.tituloFormulario} descripcion={info.descripcion}>
-      <p className="home py-6 text-sm font-light text-base-content/60">
-        Aquí va el contenido de tu formulario...
-      </p>
-    </FormCard>
+    <RegistroForm
+      info={info}
+      colecciones={result.colecciones}
+      errorCarga={result.success ? "" : result.message}
+    />
   );
 }

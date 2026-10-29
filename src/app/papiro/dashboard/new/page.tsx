@@ -47,7 +47,7 @@ export default async function NuevoPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-base-200 text-base-content">
-      <div className="mx-auto w-full max-w-4xl px-6 py-10">
+      <div className="mx-auto w-full max-w-6xl px-6 py-10 lg:px-10">
         <Volver />
 
         {isTipoFormulario(tipo) ? (

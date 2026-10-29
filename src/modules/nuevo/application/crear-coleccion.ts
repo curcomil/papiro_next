@@ -1,9 +1,7 @@
 import { construirPayload } from "../domain/nueva-coleccion";
 import type { NuevaColeccionEntrada } from "../domain/nueva-coleccion";
-import type {
-  NuevaColeccionRepository,
-  OperationResult,
-} from "../domain/nueva-coleccion-repository";
+import type { NuevaColeccionRepository } from "../domain/nueva-coleccion-repository";
+import type { OperationResult } from "../domain/resultado";
 import { hayCampoLleno } from "../domain/schema-coleccion";
 
 export interface NuevaColeccionUseCases {
