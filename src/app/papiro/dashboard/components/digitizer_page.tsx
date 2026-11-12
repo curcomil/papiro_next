@@ -172,7 +172,7 @@ export function Digitizer_page({ current_user }: Props) {
   };
 
   return (
-    <div className="min-h-screen flex bg-base-200">
+    <div className="flex h-screen overflow-hidden bg-base-200">
       <aside className="w-56 shrink-0 flex flex-col bg-base-100 text-base-content h-screen sticky top-0 self-start overflow-y-auto">
         <div className="px-6 py-6 border-b border-primary/50">
           <span className="login text-xl tracking-wide">Papiro</span>
@@ -229,8 +229,8 @@ export function Digitizer_page({ current_user }: Props) {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="px-10 pt-10 pb-6 border-b border-primary/50">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="shrink-0 px-10 pt-10 pb-6 border-b border-primary/50">
           <p className="home text-xs text-base-content/40 uppercase tracking-widest font-light mb-1">
             {navItems.find((n) => n.id === activeNav)?.label}
           </p>
@@ -242,11 +242,11 @@ export function Digitizer_page({ current_user }: Props) {
             {activeNav === "new_item" &&
               "Agregar un nuevo item a un folder existente"}
             {activeNav === "pendientes" && "Registros en espera de revisión"}
-            {activeNav === "colecciones" && "Colecciones"}
+            {activeNav === "colecciones" && "Selecciona una colección"}
           </h1>
         </div>
 
-        <div className="px-10 py-8">
+        <div className="min-h-0 flex-1 overflow-y-auto px-10 py-8">
           {activeNav === "overview" && (
             <div className="flex flex-col items-center justify-center py-24 gap-4 text-base-content/50">
               <p className="home text-sm font-light">

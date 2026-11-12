@@ -125,7 +125,7 @@ const SECTIONS = [
   {
     id: "colecciones",
     label: "Colecciones",
-    title: "Colecciones",
+    title: "Selecciona una colección",
     icon: Icons.colecciones,
   },
 ] as const;
@@ -155,7 +155,7 @@ export default function AdminView({
   };
 
   return (
-    <div className="min-h-screen flex bg-base-200">
+    <div className="flex h-screen overflow-hidden bg-base-200">
       {/* ── Sidebar ── */}
       <aside className="w-56 shrink-0 flex flex-col bg-base-100 text-base-content h-screen sticky top-0 self-start overflow-y-auto">
         <div className="px-6 py-6 border-b border-primary/50">
@@ -214,15 +214,15 @@ export default function AdminView({
       </aside>
 
       {/* ── Contenido ── */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="px-10 pt-10 pb-6 border-b border-primary/50">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="shrink-0 px-10 pt-10 pb-6 border-b border-primary/50">
           <p className="home text-xs text-base-content/40 uppercase tracking-widest font-light mb-1">
             {active.label}
           </p>
           <h1 className="login text-3xl text-base-content">{active.title}</h1>
         </div>
 
-        <div className="px-10 py-8">
+        <div className="min-h-0 flex-1 overflow-y-auto px-10 py-8">
           {section === "usuarios" && (
             <UsersPanel users={users} status={usersStatus} />
           )}
