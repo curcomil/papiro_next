@@ -11,7 +11,7 @@ import {
   listaDe,
   valorDe,
 } from "../../domain/campo-metadato";
-import { CampoTextarea, CampoTexto, Etiqueta } from "../components/Campos";
+import { CampoTextarea, CampoTexto, Etiqueta } from "./Campos";
 import type { EstadoMetadatos } from "../use-coleccion-detalle";
 
 const LEYENDA =
@@ -29,6 +29,11 @@ interface Props {
   onChange: (valores: ValoresMetadatos) => void;
   /** Claves de `campo` que deben quedar inhabilitadas. */
   deshabilitados?: readonly string[];
+  /**
+   * Panel de clasificar: muestra todos los campos de una vez y oculta el
+   * botón que los revela, para que no se puedan volver a esconder.
+   */
+  siempreClasificado?: boolean;
 }
 
 export default function MetadatosSection({
@@ -36,10 +41,11 @@ export default function MetadatosSection({
   valores,
   onChange,
   deshabilitados = [],
+  siempreClasificado = false,
 }: Props) {
   // RegistroForm remonta la sección con `key={coleccionId}`, así que esto
   // vuelve a false al cambiar de colección sin necesidad de un efecto.
-  const [clasificado, setClasificado] = useState(false);
+  const [clasificado, setClasificado] = useState(siempreClasificado);
 
   const campos = estado.tipo === "success" ? estado.schema : [];
 
@@ -109,7 +115,7 @@ export default function MetadatosSection({
           <div className="flex flex-col gap-5">
             <div className={REJILLA}>{iniciales.map(renderizar)}</div>
 
-            {adicionales.length > 0 && (
+            {!siempreClasificado && adicionales.length > 0 && (
               <div>
                 <button
                   type="button"

@@ -2,8 +2,10 @@
 
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { logout } from "../../services/auth";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSectionParam } from "../hooks/use-section-param";
+import PendientesPanel from "@/modules/pendientes/presentation/PendientesPanel";
+import ColeccionesPanel from "@/modules/colecciones/presentation/ColeccionesPanel";
 
 export interface CurrentUser {
   username: string;
@@ -126,6 +128,22 @@ const Icons = {
       />
     </svg>
   ),
+  colecciones: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"
+      />
+    </svg>
+  ),
 };
 
 const navItems = [
@@ -133,40 +151,20 @@ const navItems = [
   { id: "new_folder", label: "Nueva Carpeta", icon: Icons.crear },
   { id: "new_item", label: "Nuevo Item", icon: Icons.crear },
   { id: "check", label: "Revisiones", icon: Icons.check },
+  { id: "pendientes", label: "Pendientes", icon: Icons.clock },
+  { id: "colecciones", label: "Colecciones", icon: Icons.colecciones },
 ];
 
 const DEFAULT_SECTION = "overview";
+const SECTION_IDS = navItems.map((item) => item.id);
 
 interface Props {
   current_user: CurrentUser;
 }
 
 export function Digitizer_page({ current_user }: Props) {
-  const [activeNav, setActiveNav] = useState<string>(DEFAULT_SECTION);
+  const [activeNav, setActiveNav] = useSectionParam(SECTION_IDS, DEFAULT_SECTION);
   const router = useRouter();
-
-  // Restaurar sección desde la URL al montar
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const s = params.get("s");
-    if (s && navItems.some((n) => n.id === s)) setActiveNav(s);
-  }, []);
-
-  // Sincronizar con los botones atrás/adelante del navegador
-  useEffect(() => {
-    const onPopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      const s = params.get("s") ?? DEFAULT_SECTION;
-      setActiveNav(navItems.some((n) => n.id === s) ? s : DEFAULT_SECTION);
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
-  const handleNav = (id: string) => {
-    setActiveNav(id);
-    window.history.pushState(null, "", `?s=${id}`);
-  };
 
   const handle_logout = async () => {
     await logout();
@@ -187,7 +185,7 @@ export function Digitizer_page({ current_user }: Props) {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleNav(item.id)}
+              onClick={() => setActiveNav(item.id)}
               className={`
                       flex items-center gap-3 px-3 py-2.5 rounded-sm text-left transition-colors w-full
                       home text-sm font-light
@@ -243,6 +241,8 @@ export function Digitizer_page({ current_user }: Props) {
               "Agregar un nuevo folder a una colección existente"}
             {activeNav === "new_item" &&
               "Agregar un nuevo item a un folder existente"}
+            {activeNav === "pendientes" && "Registros en espera de revisión"}
+            {activeNav === "colecciones" && "Colecciones"}
           </h1>
         </div>
 
@@ -254,6 +254,8 @@ export function Digitizer_page({ current_user }: Props) {
               </p>
             </div>
           )}
+          {activeNav === "pendientes" && <PendientesPanel />}
+          {activeNav === "colecciones" && <ColeccionesPanel />}
         </div>
       </main>
     </div>

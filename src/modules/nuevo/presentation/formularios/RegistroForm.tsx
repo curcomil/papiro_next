@@ -2,19 +2,22 @@
 
 import { useState } from "react";
 import { FormCard } from "../components/FormCard";
-import { CampoCheckbox, CampoSelect } from "../components/Campos";
-import type { OpcionSelect } from "../components/Campos";
+import { CampoCheckbox, CampoSelect } from "@/modules/metadatos/presentation/components/Campos";
+import type { OpcionSelect } from "@/modules/metadatos/presentation/components/Campos";
 import type { ColeccionPadre } from "../../domain/coleccion-padre";
 import {
   CAMPO_PORTADA,
   camposInhabilitados,
-} from "../../domain/campo-metadato";
-import type { ValoresMetadatos } from "../../domain/campo-metadato";
+} from "@/modules/metadatos/domain/campo-metadato";
+import type {
+  ValorMetadato,
+  ValoresMetadatos,
+} from "@/modules/metadatos/domain/campo-metadato";
 import type { TipoFormularioInfo } from "../../domain/tipo-formulario";
-import { useColeccionDetalle } from "../use-coleccion-detalle";
+import { useColeccionDetalle } from "@/modules/metadatos/presentation/use-coleccion-detalle";
 import { useCrearRegistro } from "../use-crear-registro";
 import ArchivoSection from "./ArchivoSection";
-import MetadatosSection from "./MetadatosSection";
+import MetadatosSection from "@/modules/metadatos/presentation/components/MetadatosSection";
 
 const LEYENDA =
   "fieldset-legend home text-xs font-normal text-base-content/50 uppercase tracking-widest";
@@ -48,6 +51,27 @@ export default function RegistroForm({
 
   const estadoMetadatos = useColeccionDetalle(coleccionId, subcoleccionId);
 
+  // En "Otro" la portada no se escribe: es el nombre del archivo cargado. Solo
+  // se envía si el schema de la colección declara el campo, porque la API
+  // valida `metadata` con extra="forbid" y rechazaría la clave sobrante.
+  const campoPortada =
+    estadoMetadatos.tipo === "success"
+      ? estadoMetadatos.schema.find((campo) => campo.campo === CAMPO_PORTADA)
+      : undefined;
+
+  const portadaDelArchivo: ValorMetadato | undefined =
+    esOtro && archivo && campoPortada
+      ? campoPortada.esMultiple
+        ? [archivo.name]
+        : archivo.name
+      : undefined;
+
+  /** Lo que se pinta y se envía: la portada derivada pisa lo capturado. */
+  const valoresMostrados: ValoresMetadatos =
+    portadaDelArchivo === undefined
+      ? valoresMetadatos
+      : { ...valoresMetadatos, [CAMPO_PORTADA]: portadaDelArchivo };
+
   const opcionesColeccion: OpcionSelect[] = colecciones.map((coleccion) => ({
     value: coleccion.internalId,
     label: coleccion.nombre,
@@ -70,8 +94,12 @@ export default function RegistroForm({
     setValoresMetadatos({});
   };
 
-  const limpiarPortada = () =>
+  /** Si el schema no declara "portada", limpiarla añadiría una clave extra que
+   *  la API rechaza con 422. */
+  const limpiarPortada = () => {
+    if (!campoPortada) return;
     setValoresMetadatos((prev) => ({ ...prev, [CAMPO_PORTADA]: "" }));
+  };
 
   /** El tipo de registro decide qué archivo se admite: al cambiarlo se descarta. */
   const limpiarArchivo = () => {
@@ -152,7 +180,7 @@ export default function RegistroForm({
     if (!coleccion || !subcoleccion) return;
 
     await crearRegistro(
-      { coleccion, subcoleccion, libro: esLibro, metadata: valoresMetadatos },
+      { coleccion, subcoleccion, libro: esLibro, metadata: valoresMostrados },
       archivo,
     );
   };
@@ -232,7 +260,7 @@ export default function RegistroForm({
         <MetadatosSection
           key={coleccionId}
           estado={estadoMetadatos}
-          valores={valoresMetadatos}
+          valores={valoresMostrados}
           onChange={setValoresMetadatos}
           deshabilitados={camposInhabilitados(esLibro)}
         />

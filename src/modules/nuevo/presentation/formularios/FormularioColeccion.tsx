@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import { FormCard } from "../components/FormCard";
-import { CampoBooleano, CampoSelect, CampoTexto } from "../components/Campos";
-import type { OpcionSelect } from "../components/Campos";
+import { CampoBooleano, CampoSelect, CampoTexto } from "@/modules/metadatos/presentation/components/Campos";
+import type { OpcionSelect } from "@/modules/metadatos/presentation/components/Campos";
 import {
   DUBLIN_CORE_NONE,
   LABEL_OTRO,

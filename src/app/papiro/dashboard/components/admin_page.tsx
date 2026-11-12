@@ -2,6 +2,8 @@
 
 import UsersPanel from "@/modules/users/presentation/UsersPanel";
 import NuevoPanel from "@/modules/nuevo/presentation/NuevoPanel";
+import PendientesPanel from "@/modules/pendientes/presentation/PendientesPanel";
+import ColeccionesPanel from "@/modules/colecciones/presentation/ColeccionesPanel";
 import type { User } from "@/modules/users/domain/user";
 import type { LoadStatus } from "@/modules/users/domain/user-repository";
 import { ThemeToggle } from "../../components/ThemeToggle";
@@ -71,6 +73,38 @@ const Icons = {
       />
     </svg>
   ),
+  pendientes: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  ),
+  colecciones: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"
+      />
+    </svg>
+  ),
 };
 
 // ── Secciones ──────────────────────────────────────────
@@ -82,6 +116,18 @@ const SECTIONS = [
     icon: Icons.users,
   },
   { id: "nuevo", label: "Nuevo", title: "Nuevo", icon: Icons.nuevo },
+  {
+    id: "pendientes",
+    label: "Pendientes",
+    title: "Registros pendientes",
+    icon: Icons.pendientes,
+  },
+  {
+    id: "colecciones",
+    label: "Colecciones",
+    title: "Colecciones",
+    icon: Icons.colecciones,
+  },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -181,6 +227,8 @@ export default function AdminView({
             <UsersPanel users={users} status={usersStatus} />
           )}
           {section === "nuevo" && <NuevoPanel />}
+          {section === "pendientes" && <PendientesPanel />}
+          {section === "colecciones" && <ColeccionesPanel />}
         </div>
       </main>
     </div>

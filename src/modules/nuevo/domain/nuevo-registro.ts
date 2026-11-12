@@ -1,5 +1,5 @@
 import type { ColeccionPadre, Subcoleccion } from "./coleccion-padre";
-import type { ValoresMetadatos } from "./campo-metadato";
+import type { ValoresMetadatos } from "@/modules/metadatos/domain/campo-metadato";
 
 /** Identidad de la colección y subcolección que espera `POST /newitem`. */
 export interface ParentsRegistro {

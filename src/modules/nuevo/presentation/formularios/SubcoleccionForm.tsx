@@ -6,8 +6,8 @@ import {
   CampoReferencia,
   CampoSelect,
   CampoTexto,
-} from "../components/Campos";
-import type { OpcionSelect } from "../components/Campos";
+} from "@/modules/metadatos/presentation/components/Campos";
+import type { OpcionSelect } from "@/modules/metadatos/presentation/components/Campos";
 import type { ColeccionPadre } from "../../domain/coleccion-padre";
 import type { TipoFormularioInfo } from "../../domain/tipo-formulario";
 import { useCrearSubcoleccion } from "../use-crear-subcoleccion";
